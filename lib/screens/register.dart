@@ -59,12 +59,29 @@ class RegisterScreen extends StatelessWidget {
               obscureText: true,
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _register(context);
-              },
-              child: const Text('Register'),
+
+          ElevatedButton(
+            onPressed: () {
+              _register(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
+              ),
+            ).copyWith(
+              minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ganti dengan ukuran minimum yang diinginkan
             ),
+            child: const Text('Sign Up',
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF61CA3D),
+            ),
+              textAlign: TextAlign.center,
+            ),
+          ), 
           ],
         ),
       ),

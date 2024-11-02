@@ -52,52 +52,91 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
+        child:SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Selamat Datang',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            
+              Text('KaloriKu', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold,
+              color: Color(0xFF61CA3D)),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+            
+            SizedBox(height: 22),
+
+            Image.asset('assets/images/gambar1.png', width: 300, height: 300),
+          
+          SizedBox(height: 22),
+          
+          ElevatedButton(
+            onPressed: () {
+              _login(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF61CA3D),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
               ),
+            ).copyWith(
+              minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ganti dengan ukuran minimum yang diinginkan
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true,
+            child: const Text('Login',
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 24,
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
             ),
-            const SizedBox(height: 20),
+              textAlign: TextAlign.center,
+            ),
+          ),
+              SizedBox(height: 35), // Tambahkan jarak antar tombol
+
+
+            Text("Belum Punya Akun? Daftar di sini",
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.w100,
+              color: Colors.black,
+              fontSize: 10, 
+            ),
+           ),
+              SizedBox(height:5),
+
             ElevatedButton(
-              onPressed: () {
-                _login(context);
-              },
-              child: const Text('Login'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
+                        );
+                      },
+               style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+               side :BorderSide(color: Color(0xFF61CA3D), width: 2),
+                borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
+              ),
+            ).copyWith(
+              minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ganti dengan ukuran minimum yang diinginkan
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterScreen()),
-                );
-              },
-              child: const Text('Daftar'),
+            child: const Text('Sign Up',
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 24,
+              fontWeight: FontWeight. w300,
+              color: Color(0xFF61CA3D),
             ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+            SizedBox(height: 35),
           ],
         ),
+
       ),
+      
+    ),
     );
   }
 }
