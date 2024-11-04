@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'register.dart';
+
 
 class LoginScreen extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
 
   LoginScreen({super.key});
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   void _showDialog(BuildContext context, String message) {
     showDialog(
@@ -35,46 +36,68 @@ class LoginScreen extends StatelessWidget {
       _showDialog(context, 'Silahkan isi terlebih dahulu');
     } else {
       // Simulasi login
-      bool accountExists = true; // Ganti dengan logika pengecekan akun yang sebenarnya
-      bool isPasswordCorrect = false; // Ganti dengan logika pengecekan password yang sebenarnya
-
-      if (!accountExists) {
-        _showDialog(context, 'Akun tidak ditemukan. Daftar dulu?');
-      } else if (!isPasswordCorrect) {
-        _showDialog(context, 'Email atau password salah. Coba lagi.');
-      } else {
-        // Jika login berhasil
-        _showDialog(context, 'Login berhasil');
-      }
+      // Ganti dengan logika login yang sebenarnya
+      _showDialog(context, 'Login berhasil');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Login'), titleTextStyle: 
+      TextStyle(
+        fontFamily: 'Roboto',
+        fontSize: 20, 
+        color: Color(0xFF61CA3D),
+        fontWeight: FontWeight.w100,
+      ),
+      ),
       body: Padding(
-      padding: const EdgeInsets.all(16.0),
-        child:SingleChildScrollView(
+        padding: const EdgeInsets.all(30.0),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
-              Text('KaloriKu', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold,
-              color: Color(0xFF61CA3D)),
-            ),
-            
-            SizedBox(height: 22),
+TextField(
+  controller: emailController,
+  decoration: InputDecoration(
+    labelText: 'Masukkan Email',
+    fillColor: Color(0xFFE0F7FA), // Warna latar belakang
+    filled: true, // Mengaktifkan warna latar belakang
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2.0), // Warna border saat tidak fokus
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2.0), // Warna border saat fokus
+    ),
+  ),
+  cursorColor: Color(0xFF61CA3D), // Warna kursor
+),
+SizedBox(height: 15),
+TextField(
+  controller: passwordController,
+  decoration: InputDecoration(
+    labelText: 'Password',
+    fillColor: Color(0xFFE0F7FA), // Warna latar belakang
+    filled: true, // Mengaktifkan warna latar belakang
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2.0), // Warna border saat tidak fokus
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2.0), // Warna border saat fokus
+    ),
+  ),
+  obscureText: true,
+  cursorColor: Color(0xFF61CA3D), // Warna kursor
+),
+            const SizedBox(height: 20),
 
-            Image.asset('assets/images/gambar1.png', width: 300, height: 300),
-          
-          SizedBox(height: 22),
-          
           ElevatedButton(
             onPressed: () {
               _login(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF61CA3D),
+              backgroundColor: const Color(0xFFFFFFFF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
               ),
@@ -85,58 +108,15 @@ class LoginScreen extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Roboto',
               fontSize: 24,
-              fontWeight: FontWeight.w300,
-              color: Colors.white,
-            ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-              SizedBox(height: 35), // Tambahkan jarak antar tombol
-
-
-            Text("Belum Punya Akun? Daftar di sini",
-            style: TextStyle(
-              fontFamily: 'Roboto',
-              fontWeight: FontWeight.w100,
-              color: Colors.black,
-              fontSize: 10, 
-            ),
-           ),
-              SizedBox(height:5),
-
-            ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RegisterScreen()),
-                        );
-                      },
-               style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFFFFFF),
-              shape: RoundedRectangleBorder(
-               side :BorderSide(color: Color(0xFF61CA3D), width: 2),
-                borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
-              ),
-            ).copyWith(
-              minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ganti dengan ukuran minimum yang diinginkan
-            ),
-            child: const Text('Sign Up',
-            style: TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 24,
-              fontWeight: FontWeight. w300,
+              fontWeight: FontWeight.bold,
               color: Color(0xFF61CA3D),
             ),
               textAlign: TextAlign.center,
             ),
-          ),
-            SizedBox(height: 35),
+          ), 
           ],
         ),
-
       ),
-      
-    ),
     );
   }
 }

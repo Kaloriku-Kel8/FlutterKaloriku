@@ -44,12 +44,24 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
+      appBar: AppBar(title: const Text('Register'), 
+      titleTextStyle: 
+            TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 20, 
+                color: Color(0xFF61CA3D),
+                fontWeight: FontWeight.w100,
+              ),
+      ),
+
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(30.0),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
+               
               controller: emailController,
               decoration: const InputDecoration(labelText: 'Email'),
             ),

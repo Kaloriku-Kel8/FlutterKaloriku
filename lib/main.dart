@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kaloriku/screens/login.dart';
+import 'package:kaloriku/screens/home.dart';
 
 void main() {
   runApp(const KaloriKu());
@@ -16,7 +16,8 @@ class KaloriKu extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, 
       ),
-      home: LoginScreen(),
+  home: HomeScreen(),
+  debugShowCheckedModeBanner: false,
     ); 
   }
 }
