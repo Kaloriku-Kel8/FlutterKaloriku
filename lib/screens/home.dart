@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
 import 'login.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 class HomeScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -15,11 +17,15 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Distribusi konten secara merata
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center, // Distribusi konten secara merata
             children: [
-              SizedBox(height: 100),
+              Align(
+                alignment: Alignment.center,
+              ),
+              const SizedBox(height: 100),
               // Judul "KaloriKu"
-              Text(
+              const Text(
                 'KaloriKu',
                 style: TextStyle(
                   fontSize: 28,
@@ -28,16 +34,16 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 22),
+              const SizedBox(height: 22),
 
               // Gambar
-              Image.asset(
-                'assets/images/gambar1.png',
-                width: MediaQuery.of(context).size.width * 0.7, // Ukuran gambar disesuaikan dengan lebar layar
-                height: MediaQuery.of(context).size.width * 0.7, // Ukuran gambar disesuaikan dengan lebar layar
-              ),
+                        SvgPicture.asset(
+                          'assets/images/Vector Login.svg',
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: MediaQuery.of(context).size.width * 0.7,
+                        ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Tombol Login
               ElevatedButton(
@@ -53,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
                   ),
                 ).copyWith(
-                  minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)), // Ukuran minimum tombol disesuaikan dengan lebar layar
+                  minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ukuran minimum tombol disesuaikan dengan lebar layar
                 ),
                 child: const Text(
                   'Login',
@@ -67,10 +73,10 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 35), // Tambahkan jarak antar tombol
+              const SizedBox(height: 35), // Tambahkan jarak antar tombol
 
               // Text "Belum Punya Akun? Daftar di sini"
-              Text(
+              const Text(
                 "Belum Punya Akun? Daftar di sini",
                 style: TextStyle(
                   fontFamily: 'Roboto',
@@ -80,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
 
               // Tombol Sign Up
               ElevatedButton(
@@ -93,11 +99,11 @@ class HomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFFFFF),
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Color(0xFF61CA3D), width: 2),
+                    side: const BorderSide(color: Color(0xFF61CA3D), width: 2),
                     borderRadius: BorderRadius.circular(30.0), // Ganti dengan radius yang diinginkan
                   ),
                 ).copyWith(
-                  minimumSize: MaterialStateProperty.all(const Size(double.infinity, 50)), // Ukuran minimum tombol disesuaikan dengan lebar layar
+                  minimumSize: WidgetStateProperty.all(const Size(250, 50)), // Ukuran minimum tombol disesuaikan dengan lebar layar
                 ),
                 child: const Text(
                   'Sign Up',
