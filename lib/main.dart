@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kaloriku/screens/home.dart';
-import 'package:kaloriku/screens/login.dart';
-import 'package:kaloriku/screens/register.dart';
 import 'package:kaloriku/screens/userdatainput.dart';
-import 'package:kaloriku/statemanag.dart';
+import 'package:kaloriku/screens/userdatainput2.dart';
+import 'package:kaloriku/screens/userdatainput3.dart';
+import 'package:kaloriku/screens/userdatainput4.dart';
 
 
 void main() {
@@ -21,8 +21,8 @@ class KaloriKu extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green, 
       ),
-  home:  RegisterScreen(),
+        home: HomeScreen(),
   debugShowCheckedModeBanner: false,
-    ); 
+    );
   }
 }

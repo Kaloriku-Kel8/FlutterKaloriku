@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'userdatainput2.dart';
 
 class ProfileInputScreen extends StatefulWidget {
+  const ProfileInputScreen({super.key});
+
   @override
   _ProfileInputScreenState createState() => _ProfileInputScreenState();
 }
@@ -43,8 +46,8 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
       builder: (BuildContext context, Widget? child) {
       return Theme(
         data: ThemeData.light().copyWith(
-          primaryColor: Color(0xFF61CA3D), // Warna untuk elemen utama
-          buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary), colorScheme: ColorScheme.light(primary: Colors.green).copyWith(secondary: Colors.green),
+          primaryColor: const Color(0xFFFFFFFF), // Warna untuk elemen utama
+          buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary), colorScheme: const ColorScheme.light(primary: Colors.green).copyWith(secondary: Colors.green),
         ),
         child: child!,
       );
@@ -98,7 +101,7 @@ Widget build(BuildContext context) {
       elevation: 0,
       backgroundColor: Colors.white,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.black),
+        icon: const Icon(Icons.arrow_back, color: Colors.black),
         onPressed: () {
       Navigator.pop(context); // Menambahkan logika untuk kembali ke halaman sebelumnya
         },
@@ -109,12 +112,12 @@ Widget build(BuildContext context) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Langkah 1 dari 4",
             style: TextStyle(color: Colors.black87),
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             "Lengkapi datamu dulu, yuk",
             style: TextStyle(
               fontFamily: 'Roboto',
@@ -123,22 +126,22 @@ Widget build(BuildContext context) {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _buildTextField(
             label: "Nama",
             controller: nameController,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _buildDateField(
             label: "Tanggal Lahir",
             controller: dobController,
             context: context,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Jenis Kelamin",
                 style: TextStyle(
                   fontFamily: 'Roboto',
@@ -147,39 +150,43 @@ Widget build(BuildContext context) {
               Row(
                 children: [
                   _buildGenderButton("Laki-laki"),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   _buildGenderButton("Perempuan"),
                 ],
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _buildTextField(
             label: "Berat badan (kg)",
             controller: weightController,
             isNumeric: true,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _buildTextField(
             label: "Tinggi Badan (cm)",
             controller: heightController,
             isNumeric: true,
           ),
-          SizedBox(height: 60), // Memberikan jarak sebelum tombol "Lanjut"
+          const SizedBox(height: 60), // Memberikan jarak sebelum tombol "Lanjut"
           if (isFormComplete)
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF61CA3D),
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                  backgroundColor: const Color(0xFF61CA3D),
+                  padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
                 onPressed: () {
                   // Logic for next step
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => StepTwo(onNext: () {  }, onBack: () {  })),
+                  );
                 },
-                child: Text(
+                child: const Text(
                   "Lanjut",
                   style: TextStyle(
                     fontFamily: 'Roboto',
@@ -206,27 +213,27 @@ Widget build(BuildContext context) {
       children: [
         Text(
           label,
-          style: TextStyle(color: Colors.black87),
+          style: const TextStyle(color: Colors.black87),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Roboto',
           color: Colors.black87),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFF61CA3D)),
+              borderSide: const BorderSide(color: Color(0xFF61CA3D)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color:Color(0xFF61CA3D)),
+              borderSide: const BorderSide(color:Color(0xFF61CA3D)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
             ),
             errorText: _getErrorText(label, controller.text),
           ),
@@ -256,9 +263,9 @@ Widget build(BuildContext context) {
       children: [
         Text(
           label,
-          style: TextStyle(color: Colors.black87),
+          style: const TextStyle(color: Colors.black87),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           readOnly: true,
@@ -266,17 +273,17 @@ Widget build(BuildContext context) {
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFF61CA3D)),
+              borderSide: const BorderSide(color: Color(0xFF61CA3D)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFF61CA3D)),
+              borderSide: const BorderSide(color: Color(0xFF61CA3D)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
             ),
-            suffixIcon: Icon(Icons.calendar_today, color: Color(0xFF61CA3D)),
+            suffixIcon: const Icon(Icons.calendar_today, color: Color(0xFF61CA3D)),
           ),
         ),
       ],
@@ -290,7 +297,7 @@ Widget build(BuildContext context) {
       style: ElevatedButton.styleFrom(
         foregroundColor: isSelected ? Colors.white : Colors.green,
         backgroundColor: isSelected ? Colors.green : Colors.white,
-        side: BorderSide(color: Color(0xFF61CA3D)),
+        side: const BorderSide(color: Color(0xFF61CA3D)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

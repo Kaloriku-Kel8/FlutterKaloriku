@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'userdatainput.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -67,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF000000)), // Mengatur warna ikon jika diinginkan
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF000000)), // Mengatur warna ikon jika diinginkan
           onPressed: () {
             Navigator.pop(context); // Kembali ke halaman sebelumnya
           },
@@ -112,15 +112,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
                       ),
                     ),
                     cursorColor: const Color(0xFF61CA3D),
@@ -138,15 +138,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
                       ),
                     ),
                     cursorColor: const Color(0xFF61CA3D),
@@ -164,15 +164,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D)),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFF61CA3D), width: 2),
+                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
                       ),
                     ),
                     cursorColor: const Color(0xFF61CA3D),
@@ -193,7 +193,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ).copyWith(
-                        minimumSize: MaterialStateProperty.all(const Size(250, 50)),
+                        minimumSize: WidgetStateProperty.all(const Size(250, 50)),
                       ),
                       child: const Text(
                         'Sign Up',
@@ -223,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ProfileInputScreen()),
+                              MaterialPageRoute(builder: (context) => const ProfileInputScreen()),
                             );
                           },
                           child: const Text(

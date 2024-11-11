@@ -147,7 +147,7 @@ class LoginScreen extends StatelessWidget {
                 child: const Text(
                   'Login',
                   style: TextStyle(
-                    fontFamily: 'Roboto',
+                    fontFamily: 'Roboto-Regular.ttf',
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF61CA3D),

@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center, // Distribusi konten secara merata
             children: [
-              Align(
+              const Align(
                 alignment: Alignment.center,
               ),
               const SizedBox(height: 100),
@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                 "Belum Punya Akun? Daftar di sini",
                 style: TextStyle(
                   fontFamily: 'Roboto',
-                  fontWeight: FontWeight.w100,
+                  fontWeight: FontWeight.w400,
                   color: Colors.black,
                   fontSize: 10,
                 ),
@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

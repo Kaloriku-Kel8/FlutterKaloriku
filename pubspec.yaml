@@ -60,6 +60,8 @@ flutter:
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf
         - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto-Light.ttf
+        - asset: assets/fonts/Roboto-Thin.ttf
           weight: 500
 
   assets: 
@@ -67,6 +69,8 @@ flutter:
     - assets/images/gambar1.png
     - assets/images/Vector Login.svg
     - assets/images/Frame 13.svg
+    - assets/images/coba2.png
+
 
 
 
