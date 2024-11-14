@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+
+void main() {
+  runApp(LoginScreen());
+}
+
+
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
@@ -62,6 +68,7 @@ class LoginScreen extends StatelessWidget {
           fontWeight: FontWeight.w100,
         ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(
@@ -82,6 +89,7 @@ class LoginScreen extends StatelessWidget {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Masukkan Email',
+                  prefixIcon: const Icon(Icons.email),
                   floatingLabelStyle: const TextStyle(color: Colors.black54),
                   fillColor: const Color(0xFFFFFFFF),
                   filled: true,

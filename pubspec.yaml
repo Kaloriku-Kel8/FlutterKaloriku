@@ -62,6 +62,12 @@ flutter:
         - asset: assets/fonts/Roboto-Bold.ttf
         - asset: assets/fonts/Roboto-Light.ttf
         - asset: assets/fonts/Roboto-Thin.ttf
+        - asset: assets/fonts/Mulish-Black.ttf
+        - asset: assets/fonts/Mulish-Light.ttf
+        - asset: assets/fonts/Mulish-Regular.ttf
+        
+
+
           weight: 500
 
   assets: 
@@ -70,6 +76,9 @@ flutter:
     - assets/images/Vector Login.svg
     - assets/images/Frame 13.svg
     - assets/images/coba2.png
+    - assets/images/Group 17.png
+    - assets/images/Group 18.png
+    - assets/images/Frame 15.png
 
 
 

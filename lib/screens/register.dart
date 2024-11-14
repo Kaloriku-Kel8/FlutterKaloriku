@@ -60,7 +60,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         isRegistered = true; // Set status menjadi terdaftar
       });
     }
-  } // <--- Tambahkan tanda kurung tutup yang hilang di sini
+  } 
+
+  
 
   @override
   Widget build(BuildContext context) {

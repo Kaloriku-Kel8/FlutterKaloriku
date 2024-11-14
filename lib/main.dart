@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kaloriku/screens/home.dart';
-import 'package:kaloriku/screens/userdatainput.dart';
-import 'package:kaloriku/screens/userdatainput2.dart';
-import 'package:kaloriku/screens/userdatainput3.dart';
-import 'package:kaloriku/screens/userdatainput4.dart';
 
 
 void main() {
