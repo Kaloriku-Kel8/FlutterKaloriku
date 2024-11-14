@@ -1,247 +1,235 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'userdatainput.dart';
+import 'userInput1.dart';
+import 'package:kaloriku/service/AuthService.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  bool isRegistered = false; // Status apakah pengguna sudah mendaftar
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final _authService = AuthService();
+  bool _isLoading = false;
+  bool _isRegistered = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
-  void _showDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Theme(
-          data: ThemeData(
-            dialogBackgroundColor: Colors.green[100], // Mengubah warna latar belakang dialog
-            primaryColor: Colors.green, // Warna utama yang memengaruhi elemen lain seperti teks
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.green, // Mengubah warna teks tombol
-              ),
-            ),
-          ),
-          child: AlertDialog(
-            title: const Text('Pemberitahuan'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
-  void _register(BuildContext context) {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
-    String username = usernameController.text.trim();
-
-    if (email.isEmpty || password.isEmpty || username.isEmpty) {
-      _showDialog(context, 'Silahkan isi terlebih dahulu');
-    } else {
-      // Simulasi pendaftaran
-      _showDialog(context, 'Pendaftaran berhasil');
-      setState(() {
-        isRegistered = true; // Set status menjadi terdaftar
-      });
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email tidak boleh kosong';
     }
-  } // <--- Tambahkan tanda kurung tutup yang hilang di sini
+    if (!value.contains('@') || !value.contains('.')) {
+      return 'Email tidak valid';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password tidak boleh kosong';
+    }
+    if (value.length < 6) {
+      return 'Password minimal 6 karakter';
+    }
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Konfirmasi password tidak boleh kosong';
+    }
+    if (value != _passwordController.text) {
+      return 'Password tidak cocok';
+    }
+    return null;
+  }
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await _authService.register(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _confirmPasswordController.text.trim(),
+      );
+
+      if (response.containsKey('error')) {
+        _showDialog(
+          context,
+          response['error']['message'] ?? 'Terjadi kesalahan saat mendaftar',
+          isError: true,
+        );
+        return;
+      }
+
+      setState(() => _isRegistered = true);
+      _showDialog(
+        context,
+        response['message'] ?? 'Pendaftaran berhasil!',
+        isError: false,
+      );
+    } catch (e) {
+      _showDialog(context, 'Terjadi kesalahan: ${e.toString()}', isError: true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF000000)), // Mengatur warna ikon jika diinginkan
-          onPressed: () {
-            Navigator.pop(context); // Kembali ke halaman sebelumnya
-          },
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Register'),
-        titleTextStyle: const TextStyle(
-          fontFamily: 'Roboto',
-          fontSize: 20,
-          color: Color(0xFF61CA3D),
-          fontWeight: FontWeight.w100,
+        title: const Text(
+          'Register',
+          style: TextStyle(
+            fontFamily: 'Roboto',
+            fontSize: 20,
+            color: Color(0xFF61CA3D),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Opacity(
-                opacity: 0.9,
-                child: SvgPicture.asset(
-                  'assets/images/Frame 13.svg', // Ganti dengan path gambar Anda
-                  width: MediaQuery.of(context).size.width * 3.0,
-                  height: MediaQuery.of(context).size.width * 3.0,
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _validateEmail,
                 ),
-              ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 60),
-
-                  // Untuk Email
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Masukkan Email',
-                      floatingLabelStyle: const TextStyle(color: Colors.black54),
-                      fillColor: const Color(0xFFFFFFFF),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
-                      ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword 
+                        ? Icons.visibility_off 
+                        : Icons.visibility),
+                      onPressed: () => setState(() => 
+                        _obscurePassword = !_obscurePassword),
                     ),
-                    cursorColor: const Color(0xFF61CA3D),
                   ),
-
-                  const SizedBox(height: 15),
-
-                  // Untuk Username
-                  TextField(
-                    controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: 'Masukkan Username',
-                      floatingLabelStyle: const TextStyle(color: Colors.black54),
-                      fillColor: const Color(0xFFFFFFFF),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
-                      ),
+                  obscureText: _obscurePassword,
+                  validator: _validatePassword,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: InputDecoration(
+                    labelText: 'Konfirmasi Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureConfirmPassword 
+                        ? Icons.visibility_off 
+                        : Icons.visibility),
+                      onPressed: () => setState(() => 
+                        _obscureConfirmPassword = !_obscureConfirmPassword),
                     ),
-                    cursorColor: const Color(0xFF61CA3D),
                   ),
-
-                  const SizedBox(height: 15),
-
-                  // Untuk Password
-                  TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Masukkan Password',
-                      floatingLabelStyle: const TextStyle(color: Colors.black38),
-                      fillColor: const Color(0xFFFFFFFF),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                  obscureText: _obscureConfirmPassword,
+                  validator: _validateConfirmPassword,
+                ),
+                const SizedBox(height: 32),
+                if (!_isRegistered)
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _register,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF61CA3D),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    cursorColor: const Color(0xFF61CA3D),
-                    obscureText: true,
-                  ),
-
-                  const SizedBox(height: 50),
-
-                  // Tombol Sign Up ditampilkan hanya jika user belum terdaftar
-                  if (!isRegistered)
-                    ElevatedButton(
-                      onPressed: () {
-                        _register(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFFFFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ).copyWith(
-                        minimumSize: WidgetStateProperty.all(const Size(250, 50)),
-                      ),
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF61CA3D),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                  // Tombol Lanjut jika isRegistered true
-                  if (isRegistered)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end, // Atur posisi tombol
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF61CA3D),
-                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const ProfileInputScreen()),
-                            );
-                          },
-                          child: const Text(
-                            "Lanjut",
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
+                    child: _isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
+                      : const Text(
+                          'Daftar',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
+                  ),
+                if (_isRegistered)
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileInputScreen(),
+                      ),
                     ),
-                ],
-              ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF61CA3D),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      'Lanjut',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  void _showDialog(BuildContext context, String message, {bool isError = false}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isError ? 'Error' : 'Sukses'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

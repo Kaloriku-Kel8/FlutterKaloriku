@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
         return Theme(
           data: ThemeData(
             dialogBackgroundColor: Colors.green[100],
-            primaryColor: Colors.green, 
+            primaryColor: Colors.green,
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.green,
