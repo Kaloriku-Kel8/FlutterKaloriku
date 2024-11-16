@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:kaloriku/model/User.dart';
+import 'package:kaloriku/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class User {
