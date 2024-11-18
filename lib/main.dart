@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kaloriku/screens/home.dart';
-
-
 void main() {
   runApp(const KaloriKu());
 }
 
 class KaloriKu extends StatelessWidget {
-
   const KaloriKu({super.key});
 
   @override
@@ -15,10 +12,10 @@ class KaloriKu extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Test Login',
       theme: ThemeData(
-        primarySwatch: Colors.green, 
+        primarySwatch: Colors.green,
       ),
-        home: HomeScreen(),
-  debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

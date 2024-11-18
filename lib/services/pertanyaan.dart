@@ -10,6 +10,8 @@ void main() {
 
 
 class QuestionPage extends StatefulWidget {
+  const QuestionPage({super.key});
+
   @override
   _QuestionPageState createState() => _QuestionPageState();
 }
@@ -48,10 +50,10 @@ class _QuestionPageState extends State<QuestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pertanyaan'),
+        title: const Text('Pertanyaan'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               _showAddQuestionDialog();
             },
@@ -63,7 +65,7 @@ class _QuestionPageState extends State<QuestionPage> {
         itemBuilder: (context, index) {
           final question = questions[index];
           return Card(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -71,37 +73,37 @@ class _QuestionPageState extends State<QuestionPage> {
                 children: [
                   Text(
                     question['title'],
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(question['content']),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.thumb_up, size: 16),
-                          SizedBox(width: 4),
+                          const Icon(Icons.thumb_up, size: 16),
+                          const SizedBox(width: 4),
                           Text('${question['likes']}'),
-                          SizedBox(width: 16),
-                          Icon(Icons.comment, size: 16),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 16),
+                          const Icon(Icons.comment, size: 16),
+                          const SizedBox(width: 4),
                           Text('${question['comments']}'),
                         ],
                       ),
                       Text(
                         question['date'],
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                        style: const TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                       TextButton(
                         onPressed: () {
                           // Tambahkan logika untuk melihat detail pertanyaan
                         },
-                        child: Text('Lihat', style: TextStyle(color: Colors.green)),
+                        child: const Text('Lihat', style: TextStyle(color: Colors.green)),
                       ),
                     ],
                   ),
@@ -122,17 +124,17 @@ class _QuestionPageState extends State<QuestionPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Buat Pertanyaan Baru'),
+          title: const Text('Buat Pertanyaan Baru'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: 'Judul'),
+                decoration: const InputDecoration(labelText: 'Judul'),
               ),
               TextField(
                 controller: contentController,
-                decoration: InputDecoration(labelText: 'Konten'),
+                decoration: const InputDecoration(labelText: 'Konten'),
                 maxLines: 3,
               ),
             ],
@@ -142,7 +144,7 @@ class _QuestionPageState extends State<QuestionPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Batal'),
+              child: const Text('Batal'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -153,7 +155,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 }
                 Navigator.of(context).pop();
               },
-              child: Text('Tambah'),
+              child: const Text('Tambah'),
             ),
           ],
         );
