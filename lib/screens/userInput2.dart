@@ -9,11 +9,11 @@ class StepTwo extends StatefulWidget {
   final VoidCallback onBack;
 
   const StepTwo({
-    Key? key,
+    super.key,
     required this.userData,
     required this.onNext,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   _StepTwoState createState() => _StepTwoState();

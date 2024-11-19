@@ -12,6 +12,8 @@ void main() {
 }
 
 class HomeMenuScreen extends StatelessWidget {
+  const HomeMenuScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,6 +30,8 @@ class HomeMenuScreen extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -258,17 +262,17 @@ class CustomCircularProgressIndicator extends StatelessWidget {
   final Color valueColor;
 
   const CustomCircularProgressIndicator({
-    Key? key,
+    super.key,
     required this.progress,
     this.strokeWidth = 15,
     this.backgroundColor = Colors.grey,
     this.valueColor = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size.square(150),
+      size: const Size.square(150),
       painter: _CircularProgressPainter(
         progress: progress,
         strokeWidth: strokeWidth,

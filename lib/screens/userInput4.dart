@@ -8,11 +8,11 @@ class StepFour extends StatelessWidget {
   final VoidCallback onBack;
 
   const StepFour({
-    Key? key,
+    super.key,
     required this.onNext,
     required this.onBack,
     required this.userData,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

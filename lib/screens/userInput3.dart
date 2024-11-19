@@ -9,11 +9,11 @@ class StepThree extends StatefulWidget {
   final VoidCallback onBack;
 
   const StepThree({
-    Key? key,
+    super.key,
     required this.userData,
     required this.onNext,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   _StepThreeState createState() => _StepThreeState();

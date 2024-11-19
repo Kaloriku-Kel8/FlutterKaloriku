@@ -3,6 +3,8 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart'; // Import HomeMenuScreen dari home_menu.dart
 
 class SaranMenuScreen extends StatelessWidget {
+  const SaranMenuScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,6 +21,8 @@ class SaranMenuScreen extends StatelessWidget {
 }
 
 class MenuSuggestionScreen extends StatefulWidget {
+  const MenuSuggestionScreen({super.key});
+
   @override
   _MenuSuggestionScreenState createState() => _MenuSuggestionScreenState();
 }
