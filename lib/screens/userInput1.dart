@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kaloriku/model/DataUser.dart';
-import 'package:kaloriku/service/UserDataService.dart';
+import 'package:kaloriku/model/dataUser.dart';
+import 'package:kaloriku/service/userDataService.dart';
 import 'userInput2.dart';
 
 class ProfileInputScreen extends StatefulWidget {
@@ -138,7 +138,6 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
       setState(() {
         dobController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
         userData.tanggalLahir = pickedDate;
-        userData.umur = DateTime.now().year - pickedDate.year;
         _validateForm();
       });
     }
