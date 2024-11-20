@@ -5,11 +5,11 @@ import 'riwayat.dart';
 import 'saran_menu.dart';
 
 void main() {
-  MaterialApp(
-  home: (HomeMenuScreen()
-  ),
-  );
+  runApp(MaterialApp(
+    home: HomeMenuScreen(),
+  ));
 }
+
 
 class HomeMenuScreen extends StatelessWidget {
   @override
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double totalCalorie = 3138;
-    double consumedCalorie = 1000;
+    double consumedCalorie = 30000;
     double remainingCalorie = totalCalorie - consumedCalorie;
     double progressValue = consumedCalorie / totalCalorie;
 
