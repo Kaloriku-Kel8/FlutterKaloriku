@@ -10,6 +10,7 @@ class ResepMakanan {
   int? idResep;
   String? namaResep;
   String? deskripsi;
+  String? resep;
   String? gambar;
   double? kaloriMakanan;
   double? beratMakanan;
@@ -19,6 +20,7 @@ class ResepMakanan {
     this.idResep,
     this.namaResep,
     this.deskripsi,
+    this.resep,
     this.gambar,
     this.kaloriMakanan,
     this.beratMakanan,
@@ -33,6 +35,7 @@ class ResepMakanan {
           : null,
       namaResep: json['nama_resep'],
       deskripsi: json['deskripsi'],
+      resep: json['resep'],
       gambar: json['gambar'],
       kaloriMakanan: json['kalori_makanan'] != null
           ? double.tryParse(json['kalori_makanan'].toString())
@@ -55,6 +58,7 @@ class ResepMakanan {
       'id_resep': idResep,
       'nama_resep': namaResep,
       'deskripsi': deskripsi,
+      'resep': resep,
       'gambar': gambar,
       'kalori_makanan': kaloriMakanan,
       'berat_makanan': beratMakanan,
