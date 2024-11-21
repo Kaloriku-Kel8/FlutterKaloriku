@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'userInput1.dart';
-import 'package:kaloriku/service/AuthService.dart';
+import 'package:kaloriku/service/authService.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

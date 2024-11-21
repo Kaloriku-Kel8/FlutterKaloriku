@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:kaloriku/model/DataUser.dart';
+import 'package:kaloriku/model/dataUser.dart';
 import 'package:http/http.dart' as http;
 
 enum JenisKelamin { laki, perempuan }
@@ -24,7 +24,7 @@ enum BMIKategori {
   obesitas,
 }
 
-class DataUser  {
+class DataUser {
   String? userUuid;
   String? nama;
   int? umur;
@@ -38,7 +38,7 @@ class DataUser  {
   double? bmi;
   BMIKategori? bmiKategori;
 
-  DataUser ({
+  DataUser({
     this.userUuid,
     this.nama,
     this.umur,
@@ -53,8 +53,8 @@ class DataUser  {
     this.bmiKategori,
   });
 
-  factory DataUser .fromJson(Map<String, dynamic> json) {
-    return DataUser (
+  factory DataUser.fromJson(Map<String, dynamic> json) {
+    return DataUser(
       userUuid: json['user_uuid'],
       nama: json['nama'],
       umur: json['umur'] != null ? int.tryParse(json['umur'].toString()) : null,
@@ -88,9 +88,7 @@ class DataUser  {
       targetKalori: json['target_kalori'] != null
           ? double.tryParse(json['target_kalori'].toString())
           : null,
-      bmi: json['bmi'] != null
-          ? double.tryParse(json['bmi'].toString())
-          : null,
+      bmi: json['bmi'] != null ? double.tryParse(json['bmi'].toString()) : null,
       bmiKategori: json['bmi_kategori'] != null
           ? BMIKategori.values.firstWhere(
               (e) => e.toString().split('.').last == json['bmi_kategori'],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kaloriku/model/DataUser.dart';
+import 'package:kaloriku/model/dataUser.dart';
 import 'login.dart';
 
 class StepFour extends StatelessWidget {
@@ -8,11 +8,11 @@ class StepFour extends StatelessWidget {
   final VoidCallback onBack;
 
   const StepFour({
-    Key? key,
+    super.key,
     required this.onNext,
     required this.onBack,
     required this.userData,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

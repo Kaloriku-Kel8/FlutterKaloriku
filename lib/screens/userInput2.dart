@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kaloriku/model/DataUser.dart';
-import 'package:kaloriku/service/UserDataService.dart';
+import 'package:kaloriku/model/dataUser.dart';
+import 'package:kaloriku/service/userDataService.dart';
 import 'userInput3.dart';
 
 class StepTwo extends StatefulWidget {
@@ -9,11 +9,11 @@ class StepTwo extends StatefulWidget {
   final VoidCallback onBack;
 
   const StepTwo({
-    Key? key,
+    super.key,
     required this.userData,
     required this.onNext,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   _StepTwoState createState() => _StepTwoState();

@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart';
-import 'Kategori Makanan/menu_sarapan.dart';
-import 'Kategori Makanan/menu_siang.dart';
-import 'Kategori Makanan/menu_malam.dart';
-import 'Kategori Makanan/menu_camilan.dart';
-import 'Penghitung Kalori/50-200cal.dart';
-import 'Penghitung Kalori/200-400cal.dart';
-import 'Penghitung Kalori/400-600cal.dart';
-import 'Penghitung Kalori/600-800cal.dart';
 
 void main() {
-  runApp(SaranMenuScreen());
+  runApp(const SaranMenuScreen());
 }
 
 class SaranMenuScreen extends StatelessWidget {
+  const SaranMenuScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MenuSuggestionScreen(),
+      home: const MenuSuggestionScreen(),
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -27,27 +21,53 @@ class SaranMenuScreen extends StatelessWidget {
             ),
       ),
       routes: {
-        '/home': (context) => HomeMenuScreen(),
-        '/menu_sarapan': (context) => MenuSarapanScreen(),
-        '/menu_siang': (context) => MenuSiangScreen(),
-        '/menu_malam': (context) => MenuMalamScreen(),
-        '/menu_camilan': (context) => MenuCamilanScreen(),
-        '/50-200': (context) => Menu50_200Screen(),
-        '/200-400': (context) => Menu200_400Screen(),
-        '/400-600': (context) => Menu400_600Screen(),
-        '/600-800': (context) => Menu600_800Screen(),
+        '/home': (context) => const HomeMenuScreen(),
       },
     );
   }
 }
 
 class MenuSuggestionScreen extends StatefulWidget {
+  const MenuSuggestionScreen({super.key});
+
   @override
   _MenuSuggestionScreenState createState() => _MenuSuggestionScreenState();
 }
 
 class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   int _selectedIndex = 0;
+  String _selectedCategory = '';
+  String _selectedCalorie = '';
+
+  // Gambar default dan hitam putih untuk kategori makanan
+  final Map<String, String> _images = {
+    'Sarapan': 'assets/images/home/breakfast.png',
+    'Siang': 'assets/images/home/lunch.png',
+    'Malam': 'assets/images/home/dinner.png',
+    'Camilan': 'assets/images/home/snack.png',
+  };
+
+  final Map<String, String> _imagesBlack = {
+    'Sarapan': 'assets/images/home/breakfastblack.png',
+    'Siang': 'assets/images/home/lunchblack.png',
+    'Malam': 'assets/images/home/dinnerblack.png',
+    'Camilan': 'assets/images/home/snackblack.png',
+  };
+
+  // Gambar default dan hitam putih untuk penghitung kalori
+  final Map<String, String> _calorieImages = {
+    '50-200 Cal': 'assets/images/home/vegetable.png',
+    '200-400 Cal': 'assets/images/home/noodle.png',
+    '400-600 Cal': 'assets/images/home/chicken.png',
+    '600-800 Cal': 'assets/images/home/katsu.png',
+  };
+
+  final Map<String, String> _calorieImagesBlack = {
+    '50-200 Cal': 'assets/images/home/vegetableblack.png',
+    '200-400 Cal': 'assets/images/home/noodleblack.png',
+    '400-600 Cal': 'assets/images/home/chickenblack.png',
+    '600-800 Cal': 'assets/images/home/katsublack.png',
+  };
 
   void _onItemTapped(int index) {
     if (index == 0) {
@@ -64,30 +84,28 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-  backgroundColor: Colors.transparent,
-  elevation: 2,
-  automaticallyImplyLeading: false,
-  flexibleSpace: Container(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    decoration: const BoxDecoration(
-      color: Color.fromRGBO(248, 248, 248, 1.0), // Warna latar belakang
-    ),
-    child: const Row(
-      children: [
-        SizedBox(width: 16), // Margin kiri
-        Text(
-          'Saran Menu dari Kami',
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Material(
+          elevation: 2,
+          color: const Color.fromRGBO(248, 248, 248, 1.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: const Row(
+              children: [
+                SizedBox(width: 16),
+                Text(
+                  'Saran Menu dari Kami',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromRGBO(97, 202, 61, 1.0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ],
-    ),
-  ),
-),
-
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -95,21 +113,22 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 10),
+              _buildSearchBar(),
+              const SizedBox(height: 20),
               const Text(
                 'Kategori Makanan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontFamily: 'Mulish', fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               _buildFoodCategorySection(),
               const SizedBox(height: 20),
               const Text(
                 'Penghitung Kalori',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontFamily: 'Mulish' ,fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               _buildCalorieSection(),
               const SizedBox(height: 20),
-              const SizedBox(height: 10),
               _buildRecipeCard(),
             ],
           ),
@@ -152,61 +171,109 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     );
   }
 
-  Widget _buildFoodCategorySection() {
-  return SizedBox(
-    height: 93,
-    child: Center(
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: [
-          _buildCategoryItem(FluentIcons.food_toast_24_filled, 'Sarapan', '/menu_sarapan'),
-          const SizedBox(width: 2),
-          _buildCategoryItem(Icons.lunch_dining, 'Siang', '/menu_siang'),
-          const SizedBox(width: 2),
-          _buildCategoryItem(Icons.dinner_dining, 'Malam', '/menu_malam'),
-          const SizedBox(width: 2),
-          _buildCategoryItem(FluentIcons.food_apple_24_filled, 'Camilan', '/menu_camilan'),
-        ],
-      ),
-    ),
-  );
-}
-
-
-  Widget _buildCategoryItem(IconData icon, String label, String route) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.pushNamed(context, route);
-    },
-    child: Card(
+  Widget _buildSearchBar() {
+    return Material(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(11),
+      borderRadius: BorderRadius.circular(15),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Cari Makanan',
+          hintStyle: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'Mulish',
+            color: Colors.grey,
+          ),
+          prefixIcon: const Icon(
+            FluentIcons.search_12_regular,
+            color: Colors.black,
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: const Color.fromRGBO(248, 248, 248, 1.0),
+        ),
+        style: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        onChanged: (value) {
+          print("Input pencarian: $value");
+        },
       ),
-      child: Container(
-        width: 109,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(248, 248, 248, 1.0),
+    );
+  }
+
+  Widget _buildFoodCategorySection() {
+    return SizedBox(
+      height: 93,
+      child: Center(
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          children: _images.keys.map((category) {
+            final isSelected = _selectedCategory == category;
+            return Row(
+              children: [
+                _buildCategoryItem(
+                  Image.asset(
+                    isSelected ? _imagesBlack[category]! : _images[category]!,
+                    height: 40,
+                    width: 40,
+                  ),
+                  category,
+                  () {
+                    setState(() {
+                      _selectedCategory = category;
+                    });
+                  },
+                  isSelected,
+                ),
+                const SizedBox(width: 2),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem(Widget iconWidget, String label, VoidCallback onTap, bool isSelected) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(11),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.black),
-            const SizedBox(height: 5),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-            ),
-          ],
+        child: Container(
+          width: 109,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.grey[300] : const Color.fromRGBO(248, 248, 248, 1.0),
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 40, width: 40, child: iconWidget),
+              const SizedBox(height: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.black : Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildRecipeCard() {
     return Card(
@@ -218,13 +285,6 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
         children: [
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Resep Hari Ini',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
           ),
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
@@ -258,57 +318,78 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   }
 
   Widget _buildCalorieSection() {
-  return SizedBox(
-    height: 93,
-    child: Center(
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: [
-          _buildCalorieItem(FluentIcons.food_carrot_24_filled, '50-200 Cal', '/50-200'),
-          const SizedBox(width: 2),
-          _buildCalorieItem(FluentIcons.food_egg_24_filled, '200-400 Cal', '/200-400'),
-          const SizedBox(width: 2),
-          _buildCalorieItem(FluentIcons.food_chicken_leg_24_filled, '400-600 Cal', '/400-600'),
-          const SizedBox(width: 2),
-          _buildCalorieItem(FluentIcons.food_pizza_24_filled, '600-800 Cal', '/600-800'),
-        ],
+    return SizedBox(
+      height: 93,
+      child: Center(
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          children: _calorieImages.keys.map((calorieRange) {
+            final isSelected = _selectedCalorie == calorieRange;
+            return Row(
+              children: [
+                _buildCalorieItem(
+                  Image.asset(
+                    isSelected
+                        ? _calorieImagesBlack[calorieRange]!
+                        : _calorieImages[calorieRange]!,
+                    height: 40,
+                    width: 40,
+                  ),
+                  calorieRange,
+                  () {
+                    setState(() {
+                      _selectedCalorie = calorieRange;
+                    });
+                  },
+                  isSelected,
+                ),
+                const SizedBox(width: 2),
+              ],
+            );
+          }).toList(),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-
-  Widget _buildCalorieItem(IconData icon, String label, String route) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.pushNamed(context, route);
-    },
-    child: Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        width: 108,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(248, 248, 248, 1.0),
+  Widget _buildCalorieItem(
+    Widget iconWidget,
+    String label,
+    VoidCallback onTap,
+    bool isSelected,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.black),
-            const SizedBox(height: 5),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-          ],
+        child: Container(
+          width: 108,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.grey[300] : const Color.fromRGBO(248, 248, 248, 1.0),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 40, width: 40, child: iconWidget),
+              const SizedBox(height: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.black : Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

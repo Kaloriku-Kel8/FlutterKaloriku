@@ -12,6 +12,8 @@ void main() {
 
 
 class HomeMenuScreen extends StatelessWidget {
+  const HomeMenuScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,6 +30,8 @@ class HomeMenuScreen extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -44,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double totalCalorie = 3138;
-    double consumedCalorie = 30000;
+    double consumedCalorie = 1000;
     double remainingCalorie = totalCalorie - consumedCalorie;
     double progressValue = consumedCalorie / totalCalorie;
 
@@ -88,107 +92,108 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(227, 253, 222, 1.0),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${totalCalorie.toInt()} Cal',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 0),
-                      const Text(
-                        'Asupan Harian',
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: Stack(
-                      alignment: Alignment.center,
+            Material(
+              elevation: 2, // Menambahkan elevasi untuk efek bayangan
+              borderRadius: BorderRadius.circular(12), // Untuk sudut melengkung
+              color: const Color.fromRGBO(227, 253, 222, 1.0), // Warna latar belakang
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        CustomCircularProgressIndicator(
-                          progress: progressValue,
-                          strokeWidth: 15,
-                          backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
-                          valueColor: const Color.fromRGBO(113, 132, 237, 1.0),
+                        Text(
+                          '${totalCalorie.toInt()} Cal',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${remainingCalorie.toInt()} Cal',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 0),
-                            const Text(
-                              'Tersisa',
-                              style: TextStyle(fontSize: 10),
-                            ),
-                          ],
+                        const SizedBox(height: 0),
+                        const Text(
+                          'Asupan Harian',
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${consumedCalorie.toInt()} Cal',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CustomCircularProgressIndicator(
+                            progress: progressValue,
+                            strokeWidth: 15,
+                            backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
+                            valueColor: const Color.fromRGBO(113, 132, 237, 1.0),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${remainingCalorie.toInt()} Cal',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 0),
+                              const Text(
+                                'Tersisa',
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${consumedCalorie.toInt()} Cal',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 0),
-                      const Text(
-                        'Terpenuhi',
-                        style: TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(height: 0),
+                        const Text(
+                          'Terpenuhi',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(child: _buildFeatureButton(FluentIcons.history_48_regular, 'Riwayat', () {
+                Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/history.png'), 'Riwayat', () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => RiwayatScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
-                Expanded(child: _buildFeatureButton(Icons.fitness_center, 'Latihan', () {
+                Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/exercise.png'), 'Latihan', () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LatihanScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
-                Expanded(child: _buildFeatureButton(FluentIcons.food_48_regular, 'Saran Menu', () {
+                Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/eat.png'), 'Saran Menu', () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SaranMenuScreen()),
@@ -197,52 +202,53 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            _buildMealCard('Sarapan', '391 / 635 Cal', FluentIcons.food_toast_24_filled),
-            _buildMealCard('Makan Siang', '856 / 847 Cal', Icons.lunch_dining),
-            _buildMealCard('Makan Malam', '379 / 529 Cal', Icons.dinner_dining),
-            _buildMealCard('Camilan', '159 / 200 Cal', FluentIcons.food_apple_24_filled),
+            _buildMealCard('Sarapan', '391 / 635 Cal', Image.asset('assets/images/home/breakfast.png')),
+            _buildMealCard('Makan Siang', '856 / 847 Cal', Image.asset('assets/images/home/lunch.png')),
+            _buildMealCard('Makan Malam', '379 / 529 Cal', Image.asset('assets/images/home/dinner.png')),
+            _buildMealCard('Camilan', '159 / 200 Cal', Image.asset('assets/images/home/snack.png')),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFeatureButton(IconData icon, String label, VoidCallback onPressed) {
+  Widget _buildFeatureButton(Widget iconWidget, String label, VoidCallback onPressed) {
     return GestureDetector(
       onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(227, 253, 222, 1.0),
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+      child: Material(
+        elevation: 2, // Menambahkan elevation untuk efek bayangan
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.transparent, // Transparan untuk mempertahankan warna dari Container
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(227, 253, 222, 1.0),
+            borderRadius: BorderRadius.circular(8),
+          ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 50, color: Colors.black),
+            SizedBox(height: 50, width: 50, child: iconWidget),
             const SizedBox(height: 4),
             Text(label, style: const TextStyle(fontSize: 10)),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
+
 
   Widget _buildMealCard(String title, String calories, dynamic icon) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: const Color.fromRGBO(227, 253, 222, 1.0),
       child: ListTile(
-        leading: icon is String
-            ? Image.asset(icon, width: 40, height: 40)
-            : Icon(icon, size: 40, color: Colors.black),
+        leading: icon is Image
+            ? icon // Jika `icon` adalah Image, gunakan langsung.
+            : Icon(icon, size: 40, color: Colors.black), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
         title: Text(title, style: const TextStyle(fontSize: 19)),
         subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
         trailing: const Icon(FluentIcons.add_square_48_filled, size: 50, color: Colors.green),
@@ -258,17 +264,17 @@ class CustomCircularProgressIndicator extends StatelessWidget {
   final Color valueColor;
 
   const CustomCircularProgressIndicator({
-    Key? key,
+    super.key,
     required this.progress,
     this.strokeWidth = 15,
     this.backgroundColor = Colors.grey,
     this.valueColor = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size.square(150),
+      size: const Size.square(150),
       painter: _CircularProgressPainter(
         progress: progress,
         strokeWidth: strokeWidth,

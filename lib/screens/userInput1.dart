@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kaloriku/model/DataUser.dart';
-import 'package:kaloriku/service/UserDataService.dart';
+import 'package:kaloriku/model/dataUser.dart';
+import 'package:kaloriku/service/userDataService.dart';
 import 'userInput2.dart';
 
 class ProfileInputScreen extends StatefulWidget {
@@ -127,7 +127,7 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(primary: Colors.green),
+            colorScheme: const ColorScheme.light(primary: Colors.green),
           ),
           child: child!,
         );
@@ -138,7 +138,6 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
       setState(() {
         dobController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
         userData.tanggalLahir = pickedDate;
-        userData.umur = DateTime.now().year - pickedDate.year;
         _validateForm();
       });
     }
@@ -264,10 +263,12 @@ class _ProfileInputScreenState extends State<ProfileInputScreen> {
   }
 
   String? _getErrorText(String label, String value) {
-    if (label.contains("Berat badan") && !_isValidWeight(value))
+    if (label.contains("Berat badan") && !_isValidWeight(value)) {
       return "Masukkan berat badan dalam kg yang valid";
-    if (label.contains("Tinggi Badan") && !_isValidHeight(value))
+    }
+    if (label.contains("Tinggi Badan") && !_isValidHeight(value)) {
       return "Masukkan tinggi badan dalam cm yang valid";
+    }
     return null;
   }
 
