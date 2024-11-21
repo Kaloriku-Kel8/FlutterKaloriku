@@ -1,10 +1,17 @@
 
+enum KategoriMakanan {
+  sarapan,
+  makan_siang,
+  makan_malam,
+  cemilan
+}
+
 class Makanan {
   String? userUuid;
   String? namaMakanan;
   double? kaloriMakanan;
   double? beratMakanan;
-  String? kategoriMakanan;
+  KategoriMakanan? kategoriMakanan; // Change to use enum
 
   Makanan({
     this.userUuid,
@@ -14,7 +21,7 @@ class Makanan {
     this.kategoriMakanan,
   });
 
-  // Factory method untuk membuat instance dari JSON
+  // Factory method to create an instance from JSON
   factory Makanan.fromJson(Map<String, dynamic> json) {
     return Makanan(
       userUuid: json['user_uuid'],
@@ -25,43 +32,49 @@ class Makanan {
       beratMakanan: json['berat_makanan'] != null
           ? double.tryParse(json['berat_makanan'].toString())
           : null,
-      kategoriMakanan: json['kategori_makanan'],
+      kategoriMakanan: json['kategori_makanan'] != null
+          ? KategoriMakanan.values.firstWhere(
+              (e) => e.toString().split('.').last == json['kategori_makanan'],
+              orElse: () => KategoriMakanan.sarapan,
+            )
+          : null,
     );
   }
 
-  // Method untuk mengonversi instance menjadi JSON
+  // Method to convert instance back to JSON
   Map<String, dynamic> toJson() {
     return {
       'user_uuid': userUuid,
       'nama_makanan': namaMakanan,
       'kalori_makanan': kaloriMakanan,
       'berat_makanan': beratMakanan,
-      'kategori_makanan': kategoriMakanan,
+      'kategori_makanan': kategoriMakanan?.toString().split('.').last, // Serialize enum
     };
   }
 }
 
-// // Contoh penggunaan
+// // Example usage
 // void main() {
-//   // JSON dari API atau database
+//   // JSON data from API or database
 //   String jsonString = '''
 //     {
 //       "user_uuid": "12345-abcde",
 //       "nama_makanan": "Nasi Goreng",
 //       "kalori_makanan": 300.5,
 //       "berat_makanan": 150.0,
-//       "kategori_makanan": "Karbohidrat"
+//       "kategori_makanan": "makan_siang"
 //     }
 //   ''';
 
-//   // Parsing JSON menjadi objek Makanan
+//   // Parse JSON into Makanan object
 //   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
 //   Makanan makanan = Makanan.fromJson(jsonMap);
 
 //   print("Nama Makanan: ${makanan.namaMakanan}");
 //   print("Kalori: ${makanan.kaloriMakanan} kkal");
+//   print("Kategori Makanan: ${makanan.kategoriMakanan}");
 
-//   // Mengonversi kembali ke JSON
+//   // Convert back to JSON
 //   String encodedJson = jsonEncode(makanan.toJson());
 //   print("Encoded JSON: $encodedJson");
 // }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kaloriku/model/DataUser.dart';
+import 'package:kaloriku/model/dataUser.dart';
 import 'package:kaloriku/util/config/config.dart';
 import 'package:kaloriku/service/authService.dart';
 

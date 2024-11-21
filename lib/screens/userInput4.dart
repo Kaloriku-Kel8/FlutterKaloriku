@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kaloriku/model/DataUser.dart';
+import 'package:kaloriku/model/dataUser.dart';
 import 'login.dart';
 
 class StepFour extends StatelessWidget {

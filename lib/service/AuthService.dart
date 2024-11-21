@@ -1,49 +1,38 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kaloriku/model/User.dart';
+import 'package:kaloriku/model/user.dart';
 import 'package:kaloriku/util/config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  static const String USER_UUID_KEY = 'user_uuid';
-  static const String TOKEN_KEY = 'token';
-  static const String USER_KEY = 'user';
 
-  // Make _prefs nullable and initialize it lazily
+  //Register
+  static const String USER_UUID_KEY = 'user_uuid';
   SharedPreferences? _prefs;
 
-  // Initialize SharedPreferences
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
-
-  // Helper method to ensure prefs is initialized
   Future<SharedPreferences> get prefs async {
     if (_prefs == null) {
       await init();
     }
     return _prefs!;
   }
-
-  // Menyimpan UUID
   Future<void> saveUserUUID(String uuid) async {
     final preferences = await prefs;
     await preferences.setString(USER_UUID_KEY, uuid);
   }
-
-  // Mengambil UUID
   Future<String?> getUserUUID() async {
     final preferences = await prefs;
     return preferences.getString(USER_UUID_KEY);
   }
-
-  // Menghapus UUID
   Future<void> removeUserUUID() async {
     final preferences = await prefs;
     await preferences.remove(USER_UUID_KEY);
   }
 
-  // Fungsi register
   Future<Map<String, dynamic>> register(
       String email, String password, String confirmPassword) async {
     if (password != confirmPassword) {
@@ -101,54 +90,70 @@ class AuthService {
     }
   }
 
-  // Fungsi login
+
+  //LOGIN
+  static const String TOKEN_KEY = 'jwt_token';
+  static const String USER_KEY = 'current_user';
+  
+  final _storage = const FlutterSecureStorage();
+
   Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
-      );
+  try {
+    final response = await http.post(
+      Uri.http(AppConfig.API_HOST, '/api/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
 
-      final data = jsonDecode(response.body);
+    final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200 && data['status'] == 'success') {
-        final preferences = await prefs;
-        await saveUserUUID(data['user']['uuid']);
-        await preferences.setString(TOKEN_KEY, data['token']);
-        await preferences.setString(USER_KEY, jsonEncode(data['user']));
-      }
+    if (response.statusCode == 200 && data['success'] == true) {
+      // Simpan token
+      await _storage.write(key: TOKEN_KEY, value: data['data']['token']);
 
-      return data;
-    } catch (e) {
-      return {'status': 'error', 'message': e.toString()};
+      // Simpan data user
+      await _storage.write(key: USER_KEY, value: jsonEncode(data['data']['user']));
+
+      // Simpan UUID
+      await _storage.write(key: 'user_uuid', value: data['data']['user']['user_uuid']);
     }
+
+    return data;
+  } catch (e) {
+    return {'status': 'error', 'message': e.toString()};
   }
+}
+
 
   // Mengambil data user saat ini
   Future<User?> getCurrentUser() async {
-    final preferences = await prefs;
-    final userStr = preferences.getString(USER_KEY);
-    if (userStr != null) {
-      return User.fromJson(jsonDecode(userStr));
+    try {
+      final userStr = await _storage.read(key: USER_KEY);
+      if (userStr != null) {
+        return User.fromJson(jsonDecode(userStr));
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
-    return null;
   }
 
   // Mendapatkan token
   Future<String?> getToken() async {
-    final preferences = await prefs;
-    return preferences.getString(TOKEN_KEY);
+    return await _storage.read(key: TOKEN_KEY);
   }
 
   // Fungsi logout
   Future<void> logout() async {
-    final preferences = await prefs;
-    await preferences.remove(TOKEN_KEY);
-    await preferences.remove(USER_KEY);
-    await removeUserUUID();
+    await _storage.deleteAll();
+  }
+
+  // Fungsi untuk memeriksa status login
+  Future<bool> isLoggedIn() async {
+    final token = await getToken();
+    return token != null;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kaloriku/model/DataUser.dart';
-import 'package:kaloriku/service/UserDataService.dart';
+import 'package:kaloriku/model/dataUser.dart';
+import 'package:kaloriku/service/userDataService.dart';
 import 'userInput4.dart';
 
 class StepThree extends StatefulWidget {
