@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 enum WaktuMakan { sarapan, makanSiang, makanMalam, cemilan }
 
