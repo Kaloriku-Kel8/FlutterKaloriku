@@ -1,19 +1,16 @@
 
-enum KategoriMakanan {
-  sarapan,
-  makan_siang,
-  makan_malam,
-  cemilan
-}
+enum KategoriMakanan { sarapan, makan_siang, makan_malam, cemilan }
 
 class Makanan {
+  int? idMakanan;
   String? userUuid;
   String? namaMakanan;
   double? kaloriMakanan;
   double? beratMakanan;
-  KategoriMakanan? kategoriMakanan; // Change to use enum
+  KategoriMakanan? kategoriMakanan;
 
   Makanan({
+    this.idMakanan,
     this.userUuid,
     this.namaMakanan,
     this.kaloriMakanan,
@@ -24,6 +21,9 @@ class Makanan {
   // Factory method to create an instance from JSON
   factory Makanan.fromJson(Map<String, dynamic> json) {
     return Makanan(
+      idMakanan: json['id_makanan'] != null
+          ? int.tryParse(json['id_makanan'].toString())
+          : null,
       userUuid: json['user_uuid'],
       namaMakanan: json['nama_makanan'],
       kaloriMakanan: json['kalori_makanan'] != null
@@ -44,37 +44,12 @@ class Makanan {
   // Method to convert instance back to JSON
   Map<String, dynamic> toJson() {
     return {
+      'id_makanan': idMakanan,
       'user_uuid': userUuid,
       'nama_makanan': namaMakanan,
       'kalori_makanan': kaloriMakanan,
       'berat_makanan': beratMakanan,
-      'kategori_makanan': kategoriMakanan?.toString().split('.').last, // Serialize enum
+      'kategori_makanan': kategoriMakanan?.toString().split('.').last,
     };
   }
 }
-
-// // Example usage
-// void main() {
-//   // JSON data from API or database
-//   String jsonString = '''
-//     {
-//       "user_uuid": "12345-abcde",
-//       "nama_makanan": "Nasi Goreng",
-//       "kalori_makanan": 300.5,
-//       "berat_makanan": 150.0,
-//       "kategori_makanan": "makan_siang"
-//     }
-//   ''';
-
-//   // Parse JSON into Makanan object
-//   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-//   Makanan makanan = Makanan.fromJson(jsonMap);
-
-//   print("Nama Makanan: ${makanan.namaMakanan}");
-//   print("Kalori: ${makanan.kaloriMakanan} kkal");
-//   print("Kategori Makanan: ${makanan.kategoriMakanan}");
-
-//   // Convert back to JSON
-//   String encodedJson = jsonEncode(makanan.toJson());
-//   print("Encoded JSON: $encodedJson");
-// }

@@ -9,7 +9,8 @@
     int? idResep;
     String? namaResep;
     String? deskripsi;
-    String? gambar;
+    String? resep;
+  String? gambar;
     double? kaloriMakanan;
     double? beratMakanan;
     KategoriResep? kategoriResep;
@@ -18,7 +19,8 @@
       this.idResep,
       this.namaResep,
       this.deskripsi,
-      this.gambar,
+      this.resep,
+    this.gambar,
       this.kaloriMakanan,
       this.beratMakanan,
       this.kategoriResep,
@@ -54,7 +56,8 @@
         'id_resep': idResep,
         'nama_resep': namaResep,
         'deskripsi': deskripsi,
-        'gambar': gambar,
+        'resep': resep,
+      'gambar': gambar,
         'kalori_makanan': kaloriMakanan,
         'berat_makanan': beratMakanan,
         'kategori_resep': kategoriResep?.toString().split('.').last,
@@ -62,24 +65,24 @@
     }
   }
 
-  // // Example usage (optional)
-  // void main() {
-  //   // JSON data from API or database
-  //   String jsonString = '''
-  //     {
-  //       "id_resep": 1,
-  //       "nama_resep": "Ayam Goreng",
-  //       "deskripsi": "Ayam goreng dengan bumbu khas",
-  //       "gambar": "url_gambar.jpg",
-  //       "kalori_makanan": 250.0,
-  //       "berat_makanan": 200.0,
-  //       "kategori_resep": "makan_siang"
-  //     }
-  //   ''';
+// // Example usage (optional)
+// void main() {
+//   // JSON data from API or database
+//   String jsonString = '''
+//     {
+//       "id_resep": 1,
+//       "nama_resep": "Ayam Goreng",
+//       "deskripsi": "Ayam goreng dengan bumbu khas",
+//       "gambar": "url_gambar.jpg",
+//       "kalori_makanan": 250.0,
+//       "berat_makanan": 200.0,
+//       "kategori_resep": "makan_siang"
+//     }
+//   ''';
 
-  //   // Parse JSON into ResepMakanan object
-  //   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-  //   ResepMakanan resepMakanan = ResepMakanan.fromJson(jsonMap);
+//   // Parse JSON into ResepMakanan object
+//   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+//   ResepMakanan resepMakanan = ResepMakanan.fromJson(jsonMap);
 
   //   print("Nama Resep: ${resepMakanan.namaResep}");
   //   print("Deskripsi: ${resepMakanan.deskripsi}");

@@ -4,12 +4,13 @@ import 'package:kaloriku/model/resepMakanan.dart';
 import 'package:kaloriku/service/tokenService.dart';
 import 'package:kaloriku/util/config/config.dart';
 
-class ResepMakananService{
-final ApiService _apiService = ApiService();
+class ResepMakananService {
+  final ApiService _apiService = ApiService();
 
   Future<Map<String, String>> _getHeaders() async {
     return await _apiService.getHeaders();
   }
+
   Future<List<ResepMakanan>> getAllResepMakanan() async {
     try {
       final headers = await _getHeaders();
@@ -20,10 +21,12 @@ final ApiService _apiService = ApiService();
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['resep_makanan'] ?? [];
+        final List<dynamic> rawData =
+            responseData['data']['resep_makanan'] ?? [];
         return rawData.map((json) => ResepMakanan.fromJson(json)).toList();
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal mengambil data resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal mengambil data resep makanan');
       }
     } catch (e) {
       throw Exception('Error fetching resep makanan: $e');
@@ -43,7 +46,8 @@ final ApiService _apiService = ApiService();
       if (response.statusCode == 200) {
         return ResepMakanan.fromJson(responseData['data']['resep_makanan']);
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal menambahkan resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal menambahkan resep makanan');
       }
     } catch (e) {
       throw Exception('Error creating resep makanan: $e');
@@ -62,7 +66,8 @@ final ApiService _apiService = ApiService();
       if (response.statusCode == 200) {
         return ResepMakanan.fromJson(responseData['data']['resep_makanan']);
       } else {
-        throw Exception(responseData['message'] ?? 'Resep makanan tidak ditemukan');
+        throw Exception(
+            responseData['message'] ?? 'Resep makanan tidak ditemukan');
       }
     } catch (e) {
       throw Exception('Error fetching resep makanan: $e');
@@ -77,7 +82,8 @@ final ApiService _apiService = ApiService();
 
       final headers = await _getHeaders();
       final response = await http.put(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/${resepMakanan.idResep}'),
+        Uri.http(
+            AppConfig.API_HOST, '/api/resep-makanan/${resepMakanan.idResep}'),
         headers: headers,
         body: jsonEncode(resepMakanan.toJson()),
       );
@@ -86,7 +92,8 @@ final ApiService _apiService = ApiService();
       if (response.statusCode == 200) {
         return ResepMakanan.fromJson(responseData['data']['resep_makanan']);
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal memperbarui resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal memperbarui resep makanan');
       }
     } catch (e) {
       throw Exception('Error updating resep makanan: $e');
@@ -103,27 +110,32 @@ final ApiService _apiService = ApiService();
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode != 200) {
-        throw Exception(responseData['message'] ?? 'Gagal menghapus resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal menghapus resep makanan');
       }
     } catch (e) {
       throw Exception('Error deleting resep makanan: $e');
     }
   }
 
-  Future<List<ResepMakanan>> getResepMakananByCategory(KategoriResep category) async {
+  Future<List<ResepMakanan>> getResepMakananByCategory(
+      KategoriResep category) async {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/category/${category.toString().split('.').last}'),
+        Uri.http(AppConfig.API_HOST,
+            '/api/resep-makanan/category/${category.toString().split('.').last}'),
         headers: headers,
       );
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['resep_makanan'] ?? [];
+        final List<dynamic> rawData =
+            responseData['data']['resep_makanan'] ?? [];
         return rawData.map((json) => ResepMakanan.fromJson(json)).toList();
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal mengambil resep makanan berdasarkan kategori');
+        throw Exception(responseData['message'] ??
+            'Gagal mengambil resep makanan berdasarkan kategori');
       }
     } catch (e) {
       throw Exception('Error fetching resep makanan by category: $e');
@@ -141,10 +153,12 @@ final ApiService _apiService = ApiService();
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['resep_makanan'] ?? [];
+        final List<dynamic> rawData =
+            responseData['data']['resep_makanan'] ?? [];
         return rawData.map((json) => ResepMakanan.fromJson(json)).toList();
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal mencari resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal mencari resep makanan');
       }
     } catch (e) {
       throw Exception('Error searching resep makanan: $e');
@@ -166,7 +180,8 @@ final ApiService _apiService = ApiService();
         'per_page': perPage.toString(),
       };
 
-      if (kategori != null) queryParams['kategori'] = kategori.toString().split('.').last;
+      if (kategori != null)
+        queryParams['kategori'] = kategori.toString().split('.').last;
       if (kaloriMin != null) queryParams['kalori_min'] = kaloriMin.toString();
       if (kaloriMax != null) queryParams['kalori_max'] = kaloriMax.toString();
       if (keyword != null) queryParams['keyword'] = keyword;
@@ -184,7 +199,8 @@ final ApiService _apiService = ApiService();
           'pagination': responseData['data']['pagination'] ?? {},
         };
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal memfilter resep makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal memfilter resep makanan');
       }
     } catch (e) {
       throw Exception('Error filtering resep makanan: $e');
