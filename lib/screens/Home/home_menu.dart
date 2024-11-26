@@ -5,10 +5,7 @@ import 'riwayat.dart';
 import 'saran_menu.dart';
 
 void main() {
-  const MaterialApp(
-  home: (HomeMenuScreen()
-  ),
-  );
+  runApp(const HomeMenuScreen());
 }
 
 class HomeMenuScreen extends StatelessWidget {

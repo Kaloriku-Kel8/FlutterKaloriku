@@ -180,8 +180,9 @@ class ResepMakananService {
         'per_page': perPage.toString(),
       };
 
-      if (kategori != null)
+      if (kategori != null) {
         queryParams['kategori'] = kategori.toString().split('.').last;
+      }
       if (kaloriMin != null) queryParams['kalori_min'] = kaloriMin.toString();
       if (kaloriMax != null) queryParams['kalori_max'] = kaloriMax.toString();
       if (keyword != null) queryParams['keyword'] = keyword;
