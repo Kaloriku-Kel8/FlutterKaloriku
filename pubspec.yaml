@@ -75,7 +75,7 @@ flutter:
         - asset: assets/fonts/Mulish-Regular.ttf
           weight: 500
 
-  assets: 
+  assets:
     - assets/images/login_regis/email.png
     - assets/images/login_regis/gambar1.png
     - assets/images/login_regis/Vector Login.svg
