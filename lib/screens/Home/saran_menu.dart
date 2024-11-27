@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart'; // Import HomeMenuScreen dari home_menu.dart
 
+void main()  {
+  runApp(const SaranMenuScreen());
+
+}
+
 class SaranMenuScreen extends StatelessWidget {
   const SaranMenuScreen({super.key});
 
