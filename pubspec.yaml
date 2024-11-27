@@ -76,14 +76,14 @@ flutter:
           weight: 500
 
   assets: 
-    - assets/images/email.png
-    - assets/images/gambar1.png
-    - assets/images/Vector Login.svg
-    - assets/images/Frame 13.svg
-    - assets/images/coba2.png
-    - assets/images/Group 17.png
-    - assets/images/Group 18.png
-    - assets/images/Frame 15.png
+    - assets/images/login_regis/email.png
+    - assets/images/login_regis/gambar1.png
+    - assets/images/login_regis/Vector Login.svg
+    - assets/images/login_regis/Frame 13.svg
+    - assets/images/login_regis/coba2.png
+    - assets/images/login_regis/Group 17.png
+    - assets/images/login_regis/Group 18.png
+    - assets/images/login_regis/Frame 15.png
     - assets/images/home/history.png
     - assets/images/home/dinner.png
     - assets/images/home/breakfast.png
