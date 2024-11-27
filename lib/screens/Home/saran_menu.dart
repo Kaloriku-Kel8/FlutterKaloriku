@@ -93,7 +93,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     _fetchResepMakanan();
   }
 
-  Future<void> _fetchResepMakanan() async {
+Future<void> _fetchResepMakanan() async {
   setState(() {
     _isLoading = true;
   });
@@ -101,13 +101,19 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   try {
     Map<String, dynamic> result = await _resepMakananService.filterAndSearchResepMakanan(
       kategori: _selectedCategory,
-      kaloriMin: _selectedCalorie != null ? _calorieRanges[_selectedCalorie]?[0] : null,
-      kaloriMax: _selectedCalorie != null ? _calorieRanges[_selectedCalorie]?[1] : null,
+      kaloriMin: _selectedCalorie != null 
+          ? _calorieRanges[_selectedCalorie]![0].toDouble() 
+          : null,
+      kaloriMax: _selectedCalorie != null 
+          ? _calorieRanges[_selectedCalorie]![1].toDouble() 
+          : null,
       keyword: _searchKeyword.isNotEmpty ? _searchKeyword : null,
     );
 
     setState(() {
-      _resepMakananList = result['data'] as List<ResepMakanan>;
+      _resepMakananList = result['data'] is List
+          ? List<ResepMakanan>.from(result['data'])
+          : [];
       _isLoading = false;
     });
   } catch (e) {
@@ -120,15 +126,17 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   }
 }
 
-  void _onItemTapped(int index) {
-    if (index == 0) {
-      Navigator.pushNamed(context, '/home');
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+
+void _onItemTapped(int index) {
+  if (index == 0) {
+    Navigator.pushNamed(context, '/home');
+  } else {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,22 +149,23 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
           color: const Color.fromRGBO(248, 248, 248, 1.0),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: const Row(
+            child: Row(
               children: [
-                SizedBox(width: 16),
-                Text(
+                const SizedBox(width: 16),
+                const Text(
                   'Saran Menu dari Kami',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Color.fromRGBO(97, 202, 61, 1.0),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+              style: TextStyle(
+              fontSize: 20,
+              color: Color.fromRGBO(97, 202, 61, 1.0),
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
+        ],
       ),
+    ),
+  ),
+),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -374,7 +383,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                resep.namaResep,
+                resep.namaResep ?? 'Nama resep tidak tersedia',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -383,7 +392,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
               const SizedBox(height: 8),
               Text('Kalori: ${resep.kaloriMakanan}'),
               const SizedBox(height: 8),
-              Text(resep.deskripsi),
+              Text(resep.deskripsi  ?? 'Deskripsi tidak tersedia'),
             ],
           ),
         ),

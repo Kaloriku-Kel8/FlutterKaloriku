@@ -5,11 +5,8 @@ import 'riwayat.dart';
 import 'saran_menu.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: HomeMenuScreen(),
-  ));
+  runApp(const HomeMenuScreen());
 }
-
 
 class HomeMenuScreen extends StatelessWidget {
   const HomeMenuScreen({super.key});
@@ -18,7 +15,7 @@ class HomeMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: const HomeScreen(),
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -28,6 +25,7 @@ class HomeMenuScreen extends StatelessWidget {
     );
   }
 }
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -182,21 +180,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/history.png'), 'Riwayat', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RiwayatScreen()),
+                    MaterialPageRoute(builder: (context) => const RiwayatScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
                 Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/exercise.png'), 'Latihan', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LatihanScreen()),
+                    MaterialPageRoute(builder: (context) => const LatihanScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
                 Expanded(child: _buildFeatureButton(Image.asset('assets/images/home/eat.png'), 'Saran Menu', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SaranMenuScreen()),
+                    MaterialPageRoute(builder: (context) => const SaranMenuScreen()),
                   );
                 })),
               ],
