@@ -9,7 +9,7 @@ class SaranMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MenuSuggestionScreen(),
+      home: const MenuSuggestionScreen(),
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -34,7 +34,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     if (index == 0) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeMenuScreen()),
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
     } else {
       setState(() {

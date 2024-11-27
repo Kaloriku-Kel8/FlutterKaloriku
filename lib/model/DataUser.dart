@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:kaloriku/model/dataUser.dart';
-import 'package:http/http.dart' as http;
 
 enum JenisKelamin { laki, perempuan }
 

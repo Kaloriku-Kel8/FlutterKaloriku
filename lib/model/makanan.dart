@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 enum KategoriMakanan { sarapan, makan_siang, makan_malam, cemilan }
 

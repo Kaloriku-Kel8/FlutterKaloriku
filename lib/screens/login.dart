@@ -1,16 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-
-void main() {
-  runApp(LoginScreen());
-}
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kaloriku/screens/Home/home_menu.dart';
+import 'package:kaloriku/service/authService.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  static const String TOKEN_KEY = 'jwt_token';
+  static const String USER_KEY = 'current_user';
+  final _storage = const FlutterSecureStorage();
+
+  Future<Map<String, dynamic>> _performLogin(
+      String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.http(AppConfig.API_HOST, '/api/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        // Save token
+        await _storage.write(key: TOKEN_KEY, value: data['data']['token']);
+
+        // Save user data
+        await _storage.write(
+            key: USER_KEY, value: jsonEncode(data['data']['user']));
+
+        // Save UUID
+        await _storage.write(
+            key: 'user_uuid', value: data['data']['user']['user_uuid']);
+      }
+
+      return data;
+    } catch (e) {
+      return {'status': 'error', 'message': e.toString()};
+    }
+  }
 
   void _showDialog(BuildContext context, String message) {
     showDialog(
@@ -43,15 +79,26 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _login(BuildContext context) {
+  void _login(BuildContext context) async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       _showDialog(context, 'Silahkan isi terlebih dahulu');
+      return;
+    }
+
+    // Perform login
+    final response = await _performLogin(email, password);
+
+    if (response['success'] == true) {
+      // Navigate to home screen on successful login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+      );
     } else {
-      // Simulasi login
-      _showDialog(context, 'Login berhasil');
+      _showDialog(context, response['message'] ?? 'Login gagal');
     }
   }
 
@@ -67,7 +114,6 @@ class LoginScreen extends StatelessWidget {
           fontWeight: FontWeight.w100,
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(
@@ -83,7 +129,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 50),
 
-              // TextField Email
+              // Email TextField
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -104,14 +150,15 @@ class LoginScreen extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF61CA3D), width: 2),
                   ),
                 ),
                 cursorColor: const Color(0xFF61CA3D),
               ),
               const SizedBox(height: 15),
 
-              // TextField Password
+              // Password TextField
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -130,7 +177,8 @@ class LoginScreen extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF61CA3D), width: 2),
                   ),
                 ),
                 obscureText: true,
@@ -138,18 +186,16 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Tombol Login
+              // Login Button
               ElevatedButton(
-                onPressed: () {
-                  _login(context);
-                },
+                onPressed: () => _login(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFFFFF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ).copyWith(
-                  minimumSize: WidgetStateProperty.all(const Size(250, 50)),
+                  minimumSize: MaterialStateProperty.all(const Size(250, 50)),
                 ),
                 child: const Text(
                   'Login',

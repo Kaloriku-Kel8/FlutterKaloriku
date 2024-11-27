@@ -5,10 +5,7 @@ import 'riwayat.dart';
 import 'saran_menu.dart';
 
 void main() {
-  MaterialApp(
-  home: (HomeMenuScreen()
-  ),
-  );
+  runApp(const HomeMenuScreen());
 }
 
 class HomeMenuScreen extends StatelessWidget {
@@ -18,7 +15,7 @@ class HomeMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: const HomeScreen(),
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -181,21 +178,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: _buildFeatureButton(FluentIcons.history_48_regular, 'Riwayat', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RiwayatScreen()),
+                    MaterialPageRoute(builder: (context) => const RiwayatScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
                 Expanded(child: _buildFeatureButton(Icons.fitness_center, 'Latihan', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LatihanScreen()),
+                    MaterialPageRoute(builder: (context) => const LatihanScreen()),
                   );
                 })),
                 const SizedBox(width: 40),
                 Expanded(child: _buildFeatureButton(FluentIcons.food_48_regular, 'Saran Menu', () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SaranMenuScreen()),
+                    MaterialPageRoute(builder: (context) => const SaranMenuScreen()),
                   );
                 })),
               ],
