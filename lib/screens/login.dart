@@ -6,7 +6,6 @@ void main() {
   runApp(LoginScreen());
 }
 
-
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
