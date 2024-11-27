@@ -263,51 +263,40 @@ void _onItemTapped(int index) {
   }
 
   Widget _buildFoodCategorySection() {
-  return Material(
-    elevation: 2, // Memberikan efek bayangan
-    borderRadius: BorderRadius.circular(15), // Tambahkan sudut melengkung (opsional)
-    child: Container(
-      height: 93,
-      padding: const EdgeInsets.symmetric(vertical: 10), // Memberikan jarak vertikal
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: const Color.fromRGBO(248, 248, 248, 1.0), // Warna latar belakang
-      ),
-      child: Center(
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: _categoryMap.keys.map((category) {
-            final isSelected = _selectedCategory == _categoryMap[category];
-            return Row(
-              children: [
-                _buildCategoryItem(
-                  Image.asset(
-                    isSelected ? _imagesBlack[category]! : _images[category]!,
-                    height: 40,
-                    width: 40,
-                  ),
-                  category,
-                  () {
-                    setState(() {
-                      _selectedCategory =
-                          _selectedCategory == _categoryMap[category]
-                              ? null
-                              : _categoryMap[category];
-                    });
-                    _fetchResepMakanan();
-                  },
-                  isSelected,
-                ),
-                const SizedBox(width: 8), // Jarak antar item
-              ],
-            );
-          }).toList(),
-        ),
-      ),
-    ),
-  );
-}
+    return SizedBox(
 
+      height: 93,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: _categoryMap.keys.map((category) {
+          final isSelected = _selectedCategory == _categoryMap[category];
+          return Row(
+            children: [
+              _buildCategoryItem(
+                Image.asset(
+                  isSelected ? _imagesBlack[category]! : _images[category]!,
+                  height: 40,
+                  width: 40,
+                ),
+                category,
+                () {
+                  setState(() {
+                    _selectedCategory =
+                        _selectedCategory == _categoryMap[category]
+                            ? null
+                            : _categoryMap[category];
+                  });
+                  _fetchResepMakanan();
+                },
+                isSelected,
+              ),
+              const SizedBox(width: 2),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
 
   Widget _buildCategoryItem(Widget icon, String title, VoidCallback onTap, bool isSelected) {
     return GestureDetector(
@@ -343,49 +332,38 @@ void _onItemTapped(int index) {
   }
 
   Widget _buildCalorieSection() {
-  return Material(
-    elevation: 2, // Elevasi untuk memberikan efek bayangan
-    borderRadius: BorderRadius.circular(15), // Opsional: memberikan sudut melengkung
-    child: Container(
+    return SizedBox(
       height: 93,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: const Color.fromRGBO(248, 248, 248, 1.0),
-      ),
-      child: Center(
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.all(8.0),
-          children: _calorieRanges.keys.map((range) {
-            final isSelected = _selectedCalorie == range;
-            return Row(
-              children: [
-                _buildCategoryItem(
-                  Image.asset(
-                    isSelected
-                        ? _calorieImagesBlack[range]!
-                        : _calorieImages[range]!,
-                    height: 40,
-                    width: 40,
-                  ),
-                  range,
-                  () {
-                    setState(() {
-                      _selectedCalorie = _selectedCalorie == range ? null : range;
-                    });
-                    _fetchResepMakanan();
-                  },
-                  isSelected,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: _calorieRanges.keys.map((range) {
+          final isSelected = _selectedCalorie == range;
+          return Row(
+            children: [
+              _buildCategoryItem(
+                Image.asset(
+                  isSelected
+                      ? _calorieImagesBlack[range]!
+                      : _calorieImages[range]!,
+                  height: 40,
+                  width: 40,
                 ),
-                const SizedBox(width: 8), // Jarak antar item
-              ],
-            );
-          }).toList(),
-        ),
+                range,
+                () {
+                  setState(() {
+                    _selectedCalorie = _selectedCalorie == range ? null : range;
+                  });
+                  _fetchResepMakanan();
+                },
+                isSelected,
+              ),
+              const SizedBox(width: 2),
+            ],
+          );
+        }).toList(),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildRecipeList() {
     return _resepMakananList.isEmpty

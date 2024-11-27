@@ -78,7 +78,7 @@ class LoginScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               SvgPicture.asset(
-                'assets/images/Vector Login.svg',
+                'assets/images/login_regis/Vector Login.svg',
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.width * 0.7,
               ),
@@ -117,6 +117,7 @@ class LoginScreen extends StatelessWidget {
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock),
                   filled: true,
                   fillColor: const Color(0xFFFFFFFF),
                   hintText: 'Minimal 6 karakter',

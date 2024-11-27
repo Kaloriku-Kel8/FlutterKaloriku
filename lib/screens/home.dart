@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
 
               // Gambar
                         SvgPicture.asset(
-                          'assets/images/Vector Login.svg',
+                          'assets/images/login_regis/Vector Login.svg',
                           width: MediaQuery.of(context).size.width * 0.7,
                           height: MediaQuery.of(context).size.width * 0.7,
                         ),

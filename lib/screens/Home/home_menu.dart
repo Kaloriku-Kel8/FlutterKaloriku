@@ -236,9 +236,6 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 }
 
-
-
-
   Widget _buildMealCard(String title, String calories, dynamic icon) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
