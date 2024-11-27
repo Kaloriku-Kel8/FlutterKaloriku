@@ -67,12 +67,12 @@ flutter:
         - asset: assets/fonts/Roboto-Bold.ttf
         - asset: assets/fonts/Roboto-Light.ttf
         - asset: assets/fonts/Roboto-Thin.ttf
+        
+    - family: Mulish
+      fonts:
         - asset: assets/fonts/Mulish-Black.ttf
         - asset: assets/fonts/Mulish-Light.ttf
         - asset: assets/fonts/Mulish-Regular.ttf
-        
-
-
           weight: 500
 
   assets:
@@ -91,10 +91,19 @@ flutter:
     - assets/images/home/exercise.png
     - assets/images/home/lunch.png
     - assets/images/home/snack.png
-    - assets/images/home/download.jpeg
-
-
-
+    - assets/images/home/breakfastblack.png
+    - assets/images/home/lunchblack.png
+    - assets/images/home/dinnerblack.png
+    - assets/images/home/snackblack.png
+    - assets/images/home/chicken.png
+    - assets/images/home/katsu.png
+    - assets/images/home/vegetable.png
+    - assets/images/home/oat.png
+    - assets/images/home/noodle.png
+    - assets/images/home/vegetableblack.png
+    - assets/images/home/noodleblack.png
+    - assets/images/home/chickenblack.png
+    - assets/images/home/katsublack.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
