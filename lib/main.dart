@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kaloriku/screens/home.dart';
+
 void main() {
   runApp(const KaloriKu());
 }
