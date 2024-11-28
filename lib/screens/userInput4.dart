@@ -44,7 +44,7 @@ class StepFour extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Image.asset(
-                'assets/images/coba2.png',
+                'assets/images/login_regis/coba2.png',
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.width * 0.7,
                 fit: BoxFit.cover,
