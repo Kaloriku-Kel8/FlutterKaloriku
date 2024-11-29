@@ -11,11 +11,11 @@ class MakananService {
     return await _apiService.getHeaders();
   }
 
-  Future<List<Makanan>> getAllMakanan() async {
+  Future<List<Makanan>> getUserMakanan() async {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/makanan'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan'),
         headers: headers,
       );
 
@@ -25,10 +25,31 @@ class MakananService {
         return rawData.map((json) => Makanan.fromJson(json)).toList();
       } else {
         throw Exception(
-            responseData['message'] ?? 'Gagal mengambil data makanan');
+            responseData['message'] ?? 'Gagal mengambil data makanan pengguna');
       }
     } catch (e) {
-      throw Exception('Error fetching makanan: $e');
+      throw Exception('Error fetching user makanan: $e');
+    }
+  }
+
+  Future<List<Makanan>> getGeneralMakanan() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan-general'),
+        headers: headers,
+      );
+
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
+        return rawData.map((json) => Makanan.fromJson(json)).toList();
+      } else {
+        throw Exception(
+            responseData['message'] ?? 'Gagal mengambil data makanan umum');
+      }
+    } catch (e) {
+      throw Exception('Error fetching general makanan: $e');
     }
   }
 
@@ -36,7 +57,7 @@ class MakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/makanan'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan'),
         headers: headers,
         body: jsonEncode(makanan.toJson()),
       );
@@ -45,18 +66,22 @@ class MakananService {
       if (response.statusCode == 200) {
         return Makanan.fromJson(responseData['data']['makanan']);
       } else {
-        throw Exception(responseData['message'] ?? 'Gagal menambahkan makanan');
+        throw Exception(
+            responseData['message'] ?? 'Gagal menambahkan makanan');
       }
     } catch (e) {
       throw Exception('Error creating makanan: $e');
     }
   }
 
-  Future<Makanan> getMakananById(String id) async {
+  Future<Makanan> getMakananById(String id, {bool isGeneral = false}) async {
     try {
       final headers = await _getHeaders();
+      final url = isGeneral
+          ? '/api/Makanan/makanan/general/$id'
+          : '/api/Makanan/makanan/$id';
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/$id'),
+        Uri.http(AppConfig.API_HOST, url),
         headers: headers,
       );
 
@@ -79,7 +104,7 @@ class MakananService {
 
       final headers = await _getHeaders();
       final response = await http.put(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/${makanan.idMakanan}'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/${makanan.idMakanan}'),
         headers: headers,
         body: jsonEncode(makanan.toJson()),
       );
@@ -99,7 +124,7 @@ class MakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.delete(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/$id'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/$id'),
         headers: headers,
       );
 
@@ -112,12 +137,11 @@ class MakananService {
     }
   }
 
-  Future<List<Makanan>> getMakananByCategory(KategoriMakanan category) async {
+  Future<List<Makanan>> getMakananByCategory(String category) async {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST,
-            '/api/makanan/category/${category.toString().split('.').last}'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/category/$category'),
         headers: headers,
       );
 
@@ -134,11 +158,15 @@ class MakananService {
     }
   }
 
-  Future<List<Makanan>> searchMakananByName(String keyword) async {
+  Future<List<Makanan>> searchMakananByName(String keyword,
+      {bool isGeneral = false}) async {
     try {
       final headers = await _getHeaders();
+      final url = isGeneral
+          ? '/api/Makanan/makanan/search-general'
+          : '/api/Makanan/makanan/search';
       final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/search'),
+        Uri.http(AppConfig.API_HOST, url),
         headers: headers,
         body: jsonEncode({'nama_makanan': keyword}),
       );
