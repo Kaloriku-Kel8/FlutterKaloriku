@@ -66,8 +66,7 @@ class MakananService {
       if (response.statusCode == 200) {
         return Makanan.fromJson(responseData['data']['makanan']);
       } else {
-        throw Exception(
-            responseData['message'] ?? 'Gagal menambahkan makanan');
+        throw Exception(responseData['message'] ?? 'Gagal menambahkan makanan');
       }
     } catch (e) {
       throw Exception('Error creating makanan: $e');
@@ -104,7 +103,8 @@ class MakananService {
 
       final headers = await _getHeaders();
       final response = await http.put(
-        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/${makanan.idMakanan}'),
+        Uri.http(
+            AppConfig.API_HOST, '/api/Makanan/makanan/${makanan.idMakanan}'),
         headers: headers,
         body: jsonEncode(makanan.toJson()),
       );
@@ -137,11 +137,15 @@ class MakananService {
     }
   }
 
-  Future<List<Makanan>> getMakananByCategory(String category) async {
+  Future<List<Makanan>> getMakananByCategory(String category,
+      {bool isGeneral = false}) async {
     try {
       final headers = await _getHeaders();
+      final url = isGeneral
+          ? '/api/Makanan/makanan/category-general/$category'
+          : '/api/Makanan/makanan/category/$category';
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/category/$category'),
+        Uri.http(AppConfig.API_HOST, url),
         headers: headers,
       );
 
