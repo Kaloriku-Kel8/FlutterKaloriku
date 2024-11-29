@@ -15,7 +15,7 @@ class ResepMakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan'),
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan'),
         headers: headers,
       );
 
@@ -37,7 +37,7 @@ class ResepMakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan'),
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan'),
         headers: headers,
         body: jsonEncode(resepMakanan.toJson()),
       );
@@ -58,7 +58,7 @@ class ResepMakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/$id'),
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan/$id'),
         headers: headers,
       );
 
@@ -82,8 +82,8 @@ class ResepMakananService {
 
       final headers = await _getHeaders();
       final response = await http.put(
-        Uri.http(
-            AppConfig.API_HOST, '/api/resep-makanan/${resepMakanan.idResep}'),
+        Uri.http(AppConfig.API_HOST,
+            '/api/ResepMakanan/resep-makanan/${resepMakanan.idResep}'),
         headers: headers,
         body: jsonEncode(resepMakanan.toJson()),
       );
@@ -104,7 +104,7 @@ class ResepMakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.delete(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/$id'),
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan/$id'),
         headers: headers,
       );
 
@@ -146,7 +146,7 @@ class ResepMakananService {
     try {
       final headers = await _getHeaders();
       final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/search'),
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan/search'),
         headers: headers,
         body: jsonEncode({'keyword': keyword}),
       );
@@ -165,8 +165,6 @@ class ResepMakananService {
     }
   }
 
-
-  
   Future<Map<String, dynamic>> filterAndSearchResepMakanan({
     KategoriResep? kategori,
     double? kaloriMin,
@@ -189,10 +187,17 @@ class ResepMakananService {
       if (kaloriMax != null) queryParams['kalori_max'] = kaloriMax.toString();
       if (keyword != null) queryParams['keyword'] = keyword;
 
-      final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/resep-makanan/filter', queryParams),
+      final response = await http.post(
+        Uri.http(AppConfig.API_HOST, '/api/ResepMakanan/resep-makanan/filter'),
         headers: headers,
+        body: jsonEncode(queryParams),
       );
+
+      //CEK DATA
+      print('Sending data: ${queryParams}');
+      print('Headers: ${headers}');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
 
       final responseData = jsonDecode(response.body);
       if (response.statusCode == 200) {

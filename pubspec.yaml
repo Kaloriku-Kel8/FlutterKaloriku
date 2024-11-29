@@ -104,6 +104,7 @@ flutter:
     - assets/images/home/noodleblack.png
     - assets/images/home/chickenblack.png
     - assets/images/home/katsublack.png
+    - assets/images/home/sate.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

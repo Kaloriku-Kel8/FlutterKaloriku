@@ -1,30 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'menu_makanan.dart';
+import '../home_menu.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const TambahMenuApp());
 }
 
-class MyApp extends StatelessWidget {
+class TambahMenuApp extends StatelessWidget {
+  const TambahMenuApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const TambahMenuScreen(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class TambahMenuScreen extends StatefulWidget {
+  const TambahMenuScreen({Key? key}) : super(key: key);
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _TambahMenuScreenState createState() => _TambahMenuScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  // Variabel untuk menyimpan pilihan dropdown
+class _TambahMenuScreenState extends State<TambahMenuScreen> {
   String? selectedCategory;
 
-  // Daftar pilihan kategori makanan
   final List<String> foodCategories = [
     'Sarapan',
     'Siang',
@@ -32,14 +36,24 @@ class _HomePageState extends State<HomePage> {
     'Camilan',
   ];
 
-  // Variabel untuk menyimpan indeks tab yang dipilih
   int _selectedIndex = 0;
 
-  // Fungsi untuk memperbarui indeks tab yang dipilih
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 0) {
+      // Navigasi ke HomeMenuScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeMenuScreen()),
+      );
+    } else if (index == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
+      );
+    } else if (index == 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Navigasi ke Profil belum diimplementasi")),
+      );
+    }
   }
 
   @override
@@ -47,80 +61,120 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        title: const Text(
-          'Tambah',
-          style: TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Material(
+          elevation: 2,
+          color: const Color.fromRGBO(248, 248, 248, 1.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(FluentIcons.arrow_left_12_regular),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MenuMakananScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  'Tambah',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromRGBO(97, 202, 61, 1.0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        centerTitle: true,
       ),
       body: Center(
-        child: Container(
-          width: 300,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 4,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Pilih Kategori Makanan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 4),
                 ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                items: foodCategories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedCategory = newValue;
-                  });
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Pilih Kategori Makanan',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                hint: const Text('Kategori Makanan'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  print('Kategori dipilih: $selectedCategory');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  items: foodCategories.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCategory = newValue;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
+                  hint: const Text('Kategori Makanan'),
                 ),
-                child: const Text('Selesai'),
-              ),
-            ],
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedCategory == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Silakan pilih kategori makanan terlebih dahulu!'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeMenuScreen(),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                    elevation: 2,
+                    minimumSize: const Size(150, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Selesai'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -153,6 +207,10 @@ class _HomePageState extends State<HomePage> {
             label: 'Profil',
           ),
         ],
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        backgroundColor: Colors.white,
       ),
     );
   }

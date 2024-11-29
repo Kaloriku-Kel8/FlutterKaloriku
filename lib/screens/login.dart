@@ -40,28 +40,36 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Theme(
-          data: ThemeData(
-            dialogBackgroundColor: isError ? Colors.red[100] : Colors.green[100],
-            primaryColor: isError ? Colors.red : Colors.green,
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: isError ? Colors.red : Colors.green,
+        return AlertDialog(
+          backgroundColor: isError ? Colors.red[100] : Colors.green[100],
+          title: Row(
+            children: [
+              Icon(
+                isError ? Icons.error_outline : Icons.check_circle_outline,
+                color: isError ? Colors.red : Colors.green,
               ),
-            ),
-          ),
-          child: AlertDialog(
-            title: Text(isError ? 'Error' : 'Pemberitahuan'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+              const SizedBox(width: 8),
+              Text(
+                isError ? 'Error' : 'Pemberitahuan',
+                style: TextStyle(
+                  color: isError ? Colors.red : Colors.green,
+                ),
               ),
             ],
           ),
+          content: Text(
+            message,
+            style: const TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: isError ? Colors.red : Colors.green,
+              ),
+              child: const Text('OK'),
+            ),
+          ],
         );
       },
     );
@@ -79,15 +87,16 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!response['success']) {
+        // Tampilkan pesan error dari server atau pesan default
         _showDialog(
           context,
-          response['error']['message'] ?? 'Terjadi kesalahan saat login',
+          response['message'] ?? 'Terjadi kesalahan saat login.',
           isError: true,
         );
         return;
       }
 
-      // Navigate to home screen on successful login
+      // Navigasi ke layar utama jika login berhasil
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
@@ -113,18 +122,20 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              SvgPicture.asset(
-                'assets/images/login_regis/Vector Login.svg',
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.width * 0.7,
-              ),
-              const SizedBox(height: 50),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                SvgPicture.asset(
+                  'assets/images/login_regis/Vector Login.svg',
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: MediaQuery.of(context).size.width * 0.7,
+                ),
+                const SizedBox(height: 50),
 
               // Email TextFormField
               TextFormField(
@@ -163,27 +174,38 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 15),
 
-              // Password TextField
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  filled: true,
-                  fillColor: const Color(0xFFFFFFFF),
-                  hintText: 'Minimal 6 karakter',
-                  hintStyle: const TextStyle(color: Colors.black45),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                // Password TextField
+                TextFormField(
+                  controller: _passwordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password tidak boleh kosong';
+                    }
+                    if (value.length < 6) {
+                      return 'Password minimal 6 karakter';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock),
+                    labelText: 'Password',
+                    filled: true,
+                    fillColor: const Color(0xFFFFFFFF),
+                    hintText: 'Minimal 6 karakter',
+                    hintStyle: const TextStyle(color: Colors.black45),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF61CA3D)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF61CA3D)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                    ),
                   ),
                   obscureText: true,
                   cursorColor: const Color(0xFF61CA3D),

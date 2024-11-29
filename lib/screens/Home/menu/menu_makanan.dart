@@ -2,6 +2,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import '../home_menu.dart';
 import '../saran_menu.dart';
+import 'tambah_menu.dart';
 
 void main() {
   runApp(MenuMakananScreen());
@@ -22,6 +23,7 @@ class MenuMakananScreen extends StatelessWidget {
       routes: {
         '/home': (context) => const HomeMenuScreen(),
         '/saran': (context) => const SaranMenuScreen(),
+        '/tambah': (context) => const TambahMenuScreen(), // Tambahkan rute ini
       },
     );
   }
@@ -42,10 +44,31 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       _selectedIndex = index;
     });
     if (_selectedIndex == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+      );
     } else if (_selectedIndex == 1) {
-      Navigator.pushReplacementNamed(context, '/saran');
+      // Dummy navigation
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
+      );
+    } else if (_selectedIndex == 2) {
+      // Dummy navigation
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Navigasi ke Profil belum diimplementasi")),
+      );
     }
+  }
+
+  BottomNavigationBarItem _buildBottomNavItem({
+    required IconData icon,
+    required String label,
+  }) {
+    return BottomNavigationBarItem(
+      icon: Icon(icon),
+      label: label,
+    );
   }
 
   @override
@@ -63,7 +86,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 IconButton(
                   icon: Icon(FluentIcons.arrow_left_12_regular),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/saran');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SaranMenuScreen()),
+                    );
                   },
                 ),
                 const SizedBox(width: 16),
@@ -74,21 +100,23 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 0
-                  ? FluentIcons.home_12_filled
-                  : FluentIcons.home_12_regular,
-            ),
+          _buildBottomNavItem(
+            icon: _selectedIndex == 0
+                ? FluentIcons.home_12_filled
+                : FluentIcons.home_12_regular,
             label: 'Beranda',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 1
-                  ? FluentIcons.chat_12_filled
-                  : FluentIcons.chat_12_regular,
-            ),
-            label: 'Saran',
+          _buildBottomNavItem(
+            icon: _selectedIndex == 1
+                ? FluentIcons.chat_12_filled
+                : FluentIcons.chat_12_regular,
+            label: 'Pertanyaan',
+          ),
+          _buildBottomNavItem(
+            icon: _selectedIndex == 2
+                ? FluentIcons.person_12_filled
+                : FluentIcons.person_12_regular,
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -106,7 +134,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                'assets/sate.jpg',
+                'assets/images/home/sate.png',
                 fit: BoxFit.cover,
                 height: 200,
                 width: double.infinity,
@@ -127,7 +155,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
             const Spacer(),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navigasi ke TambahMenuScreen
+                  Navigator.pushNamed(context, '/tambah');
+                },
                 child: const Text('Tambah'),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
