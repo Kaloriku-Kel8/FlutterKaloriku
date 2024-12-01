@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kaloriku/service/authService.dart';  // Make sure this service exists in your project
-import 'package:kaloriku/screens/Home/home_menu.dart';  // Ensure this screen exists
+import 'package:kaloriku/service/authService.dart'; // Make sure this service exists in your project
+import 'package:kaloriku/screens/Home/home_menu.dart'; // Ensure this screen exists
 
 void main() {
   runApp(const MyApp());
@@ -33,10 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();  // Ensure AuthService is properly defined
+  final _authService = AuthService(); // Ensure AuthService is properly defined
   bool _isLoading = false;
 
-  void _showDialog(BuildContext context, String message, {bool isError = false}) {
+  void _showDialog(BuildContext context, String message,
+      {bool isError = false}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -137,42 +138,43 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 50),
 
-              // Email TextFormField
-              TextFormField(
-                controller: _emailController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email tidak boleh kosong';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Email tidak valid';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Masukkan Email',
-                  prefixIcon: const Icon(Icons.email),
-                  floatingLabelStyle: const TextStyle(color: Colors.black54),
-                  fillColor: const Color(0xFFFFFFFF),
-                  filled: true,
-                  hintText: 'Contoh: budiono@gmail.com',
-                  hintStyle: const TextStyle(color: Colors.black45),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D)),
+                // Email TextFormField
+                TextFormField(
+                  controller: _emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email tidak boleh kosong';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Email tidak valid';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Masukkan Email',
+                    prefixIcon: const Icon(Icons.email),
+                    floatingLabelStyle: const TextStyle(color: Colors.black54),
+                    fillColor: const Color(0xFFFFFFFF),
+                    filled: true,
+                    hintText: 'Contoh: budiono@gmail.com',
+                    hintStyle: const TextStyle(color: Colors.black45),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF61CA3D)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF61CA3D)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: Color(0xFF61CA3D), width: 2),
+                    ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF61CA3D), width: 2),
-                  ),
+                  cursorColor: const Color(0xFF61CA3D),
                 ),
-                cursorColor: const Color(0xFF61CA3D),
-              ),
-              const SizedBox(height: 15),
+                const SizedBox(height: 15),
 
                 // Password TextField
                 TextFormField(
@@ -210,37 +212,38 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   cursorColor: const Color(0xFF61CA3D),
                 ),
-              ),
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // Login Button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFFFFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                // Login Button
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFFFFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ).copyWith(
+                    minimumSize: MaterialStateProperty.all(const Size(250, 50)),
                   ),
-                ).copyWith(
-                  minimumSize: MaterialStateProperty.all(const Size(250, 50)),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF61CA3D)),
-                      )
-                    : const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontFamily: 'Roboto-Regular.ttf',
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF61CA3D),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFF61CA3D)),
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontFamily: 'Roboto-Regular.ttf',
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF61CA3D),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-              ),
-              const SizedBox(height: 30),
-            ],
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),
