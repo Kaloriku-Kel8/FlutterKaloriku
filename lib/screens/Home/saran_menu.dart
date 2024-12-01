@@ -370,7 +370,7 @@ Widget _buildCalorieSection(BuildContext context) {
 }
 
 
- Widget _buildRecipeList(BuildContext context) {
+Widget _buildRecipeList(BuildContext context) {
   return _resepMakananList.isEmpty
       ? Center( // Tambahkan Center
           child: const Text(
