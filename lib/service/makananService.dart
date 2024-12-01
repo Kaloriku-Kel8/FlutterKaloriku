@@ -11,32 +11,54 @@ class MakananService {
     return await _apiService.getHeaders();
   }
 
-  Future<List<Makanan>> getAllMakanan() async {
-    try {
-      final headers = await _getHeaders();
-      final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/makanan'),
-        headers: headers,
-      );
+  // Future<List<Makanan>> getUserMakanan() async {
+  //   try {
+  //     final headers = await _getHeaders();
+  //     final response = await http.get(
+  //       Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan'),
+  //       headers: headers,
+  //     );
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
-        return rawData.map((json) => Makanan.fromJson(json)).toList();
-      } else {
-        throw Exception(
-            responseData['message'] ?? 'Gagal mengambil data makanan');
-      }
-    } catch (e) {
-      throw Exception('Error fetching makanan: $e');
-    }
-  }
+  //     final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
+  //       return rawData.map((json) => Makanan.fromJson(json)).toList();
+  //     } else {
+  //       throw Exception(
+  //           responseData['message'] ?? 'Gagal mengambil data makanan pengguna');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error fetching user makanan: $e');
+  //   }
+  // }
 
+  // Future<List<Makanan>> getGeneralMakanan() async {
+  //   try {
+  //     final headers = await _getHeaders();
+  //     final response = await http.get(
+  //       Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan-general'),
+  //       headers: headers,
+  //     );
+
+  //     final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
+  //       return rawData.map((json) => Makanan.fromJson(json)).toList();
+  //     } else {
+  //       throw Exception(
+  //           responseData['message'] ?? 'Gagal mengambil data makanan umum');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error fetching general makanan: $e');
+  //   }
+  // }
+
+  //Menambahkan Custom Makanan
   Future<Makanan> createMakanan(Makanan makanan) async {
     try {
       final headers = await _getHeaders();
       final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/makanan'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan'),
         headers: headers,
         body: jsonEncode(makanan.toJson()),
       );
@@ -52,54 +74,61 @@ class MakananService {
     }
   }
 
-  Future<Makanan> getMakananById(String id) async {
-    try {
-      final headers = await _getHeaders();
-      final response = await http.get(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/$id'),
-        headers: headers,
-      );
+  // //Mengambil Makanan Berdasarkan id
+  // Future<Makanan> getMakananById(String id, {bool isGeneral = false}) async {
+  //   try {
+  //     final headers = await _getHeaders();
+  //     final url = isGeneral
+  //         ? '/api/Makanan/makanan/general/$id'
+  //         : '/api/Makanan/makanan/$id';
+  //     final response = await http.get(
+  //       Uri.http(AppConfig.API_HOST, url),
+  //       headers: headers,
+  //     );
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        return Makanan.fromJson(responseData['data']['makanan']);
-      } else {
-        throw Exception(responseData['message'] ?? 'Makanan tidak ditemukan');
-      }
-    } catch (e) {
-      throw Exception('Error fetching makanan: $e');
-    }
-  }
+  //     final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       return Makanan.fromJson(responseData['data']['makanan']);
+  //     } else {
+  //       throw Exception(responseData['message'] ?? 'Makanan tidak ditemukan');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error fetching makanan: $e');
+  //   }
+  // }
+  
+  // //Memperbarui Makanan
+  // Future<Makanan> updateMakanan(Makanan makanan) async {
+  //   try {
+  //     if (makanan.idMakanan == null) {
+  //       throw Exception('ID makanan harus disertakan untuk update');
+  //     }
 
-  Future<Makanan> updateMakanan(Makanan makanan) async {
-    try {
-      if (makanan.idMakanan == null) {
-        throw Exception('ID makanan harus disertakan untuk update');
-      }
+  //     final headers = await _getHeaders();
+  //     final response = await http.put(
+  //       Uri.http(
+  //           AppConfig.API_HOST, '/api/Makanan/makanan/${makanan.idMakanan}'),
+  //       headers: headers,
+  //       body: jsonEncode(makanan.toJson()),
+  //     );
 
-      final headers = await _getHeaders();
-      final response = await http.put(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/${makanan.idMakanan}'),
-        headers: headers,
-        body: jsonEncode(makanan.toJson()),
-      );
+  //     final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       return Makanan.fromJson(responseData['data']['makanan']);
+  //     } else {
+  //       throw Exception(responseData['message'] ?? 'Gagal memperbarui makanan');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error updating makanan: $e');
+  //   }
+  // }
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        return Makanan.fromJson(responseData['data']['makanan']);
-      } else {
-        throw Exception(responseData['message'] ?? 'Gagal memperbarui makanan');
-      }
-    } catch (e) {
-      throw Exception('Error updating makanan: $e');
-    }
-  }
-
+  //Menghapus Makanan
   Future<void> deleteMakanan(String id) async {
     try {
       final headers = await _getHeaders();
       final response = await http.delete(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/$id'),
+        Uri.http(AppConfig.API_HOST, '/api/Makanan/makanan/$id'),
         headers: headers,
       );
 
@@ -112,46 +141,69 @@ class MakananService {
     }
   }
 
-  Future<List<Makanan>> getMakananByCategory(KategoriMakanan category) async {
-    try {
-      final headers = await _getHeaders();
-      final response = await http.get(
-        Uri.http(AppConfig.API_HOST,
-            '/api/makanan/category/${category.toString().split('.').last}'),
-        headers: headers,
-      );
+  // Future<List<Makanan>> getMakananByCategory(String category,
+  //     {bool isGeneral = false}) async {
+  //   try {
+  //     final headers = await _getHeaders();
+  //     final url = isGeneral
+  //         ? '/api/Makanan/makanan/category-general/$category'
+  //         : '/api/Makanan/makanan/category/$category';
+  //     final response = await http.get(
+  //       Uri.http(AppConfig.API_HOST, url),
+  //       headers: headers,
+  //     );
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
-        return rawData.map((json) => Makanan.fromJson(json)).toList();
-      } else {
-        throw Exception(responseData['message'] ??
-            'Gagal mengambil makanan berdasarkan kategori');
-      }
-    } catch (e) {
-      throw Exception('Error fetching makanan by category: $e');
+  //     final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
+  //       return rawData.map((json) => Makanan.fromJson(json)).toList();
+  //     } else {
+  //       throw Exception(responseData['message'] ??
+  //           'Gagal mengambil makanan berdasarkan kategori');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error fetching makanan by category: $e');
+  //   }
+  // }
+
+  //Menampilkan berdasarkan kategori dan mencari makanan
+  Future<List<Makanan>> GetAndSearchMakanan({
+  String? keyword,
+  required String category,
+  bool isGeneral = false,
+  }) async {
+  try {
+    if (category.isEmpty) {
+      throw Exception('Kategori makanan harus diisi.');
     }
-  }
 
-  Future<List<Makanan>> searchMakananByName(String keyword) async {
-    try {
-      final headers = await _getHeaders();
-      final response = await http.post(
-        Uri.http(AppConfig.API_HOST, '/api/makanan/search'),
-        headers: headers,
-        body: jsonEncode({'nama_makanan': keyword}),
-      );
+    final headers = await _getHeaders();
+    final url = isGeneral
+        ? '/api/Makanan/makanan/search-general'
+        : '/api/Makanan/makanan/search';
 
-      final responseData = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
-        return rawData.map((json) => Makanan.fromJson(json)).toList();
-      } else {
-        throw Exception(responseData['message'] ?? 'Gagal mencari makanan');
-      }
-    } catch (e) {
-      throw Exception('Error searching makanan: $e');
+    
+    final requestBody = {
+      if (keyword != null && keyword.isNotEmpty) 'nama_makanan': keyword,
+      'kategori_makanan': category,
+    };
+
+    final response = await http.post(
+      Uri.http(AppConfig.API_HOST, url),
+      headers: headers,
+      body: jsonEncode(requestBody),
+    );
+
+    final responseData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final List<dynamic> rawData = responseData['data']['makanan'] ?? [];
+      return rawData.map((json) => Makanan.fromJson(json)).toList();
+    } else {
+      throw Exception(responseData['message'] ?? 'Gagal mencari makanan');
     }
+  } catch (e) {
+    throw Exception('Error searching makanan: $e');
   }
+}
+
 }

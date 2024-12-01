@@ -104,6 +104,30 @@ flutter:
     - assets/images/home/noodleblack.png
     - assets/images/home/chickenblack.png
     - assets/images/home/katsublack.png
+    - assets/images/home/sate.png
+    - assets/images/home/upperbody.jpeg
+    - assets/images/home/lowerbodu.jpeg
+    - assets/images/home/cardio.jpeg
+    - assets/images/home/jogging.png
+    - assets/images/home/jumpingjack.png
+    - assets/images/home/mountainclimber.png
+    - assets/images/home/highknees.png
+    - assets/images/home/burpees.png
+    - assets/images/home/squatjump.png
+    - assets/images/home/skipping.png
+    - assets/images/home/pushup.png
+    - assets/images/home/latpulldown.png
+    - assets/images/home/dumbbell.png
+    - assets/images/home/dumbbellcurl.png
+    - assets/images/home/overhead.png
+    - assets/images/home/bentover.png
+    - assets/images/home/pushup.png
+    - assets/images/home/lunges.png
+    - assets/images/home/glutebridge.png
+    - assets/images/home/stepup.png
+    - assets/images/home/calfraises.png
+    - assets/images/home/sidelunge.png
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
