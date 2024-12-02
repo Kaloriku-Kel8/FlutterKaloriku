@@ -3,6 +3,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'latihan.dart';
 import 'riwayat.dart';
 import 'saran_menu.dart';
+import '../profil/profil.dart';
 
 void main() {
   runApp(const HomeMenuScreen());
@@ -40,6 +41,22 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+      );
+    } else if (index == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      );
+    }
   }
 
   @override

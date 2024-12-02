@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../home_menu.dart';
 import '../saran_menu.dart';
 import 'tambah_menu.dart';
+import 'package:kaloriku/screens/profil/profil.dart';
 
 void main() {
   runApp(MenuMakananScreen());
@@ -54,9 +55,9 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         const SnackBar(content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
       );
     } else if (_selectedIndex == 2) {
-      // Dummy navigation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Navigasi ke Profil belum diimplementasi")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
   }
@@ -146,11 +147,18 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text('756 Cal'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Text('789 Cal', style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal)),
+              ],
+            ),
             const SizedBox(height: 16),
-            const Text(
-              'Resepnya balblalablabla',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Text('Resepnya aaaa', style: TextStyle(fontSize: 16)),
+              ],
             ),
             const Spacer(),
             Center(
