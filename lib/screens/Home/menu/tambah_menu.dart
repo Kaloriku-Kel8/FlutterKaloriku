@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'menu_makanan.dart';
 import '../home_menu.dart';
+import 'package:kaloriku/screens/profil/profil.dart';
 
 void main() {
   runApp(const TambahMenuApp());
@@ -50,8 +51,9 @@ class _TambahMenuScreenState extends State<TambahMenuScreen> {
         const SnackBar(content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
       );
     } else if (index == 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Navigasi ke Profil belum diimplementasi")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
   }

@@ -3,6 +3,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/service/resepMakananService.dart';
 import 'package:kaloriku/model/resepMakanan.dart';
 import 'home_menu.dart';
+import '../profil/profil.dart';
 
 void main() {
   runApp(const SaranMenuScreen());
@@ -128,12 +129,24 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   }
 
   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
     if (index == 0) {
-      Navigator.pushNamed(context, '/home');
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+      );
+    } else if (index == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      );
     }
   }
 
@@ -180,6 +193,8 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
               _buildSectionTitle('Penghitung Kalori'),
               const SizedBox(height: 8),
               _buildCalorieSection(context),
+              const SizedBox(height: 16),
+              const Divider(),
               const SizedBox(height: 16),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -370,7 +385,7 @@ Widget _buildCalorieSection(BuildContext context) {
 }
 
 
- Widget _buildRecipeList(BuildContext context) {
+Widget _buildRecipeList(BuildContext context) {
   return _resepMakananList.isEmpty
       ? Center( // Tambahkan Center
           child: const Text(
