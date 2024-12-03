@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/service/resepMakananService.dart';
 import 'package:kaloriku/model/resepMakanan.dart';
+import 'package:kaloriku/screens/Home/menu/menu_makanan.dart';
 import 'home_menu.dart';
 import '../profil/profil.dart';
 
@@ -25,6 +26,8 @@ class SaranMenuScreen extends StatelessWidget {
       ),
       routes: {
         '/home': (context) => const HomeMenuScreen(),
+        '/saran': (context) => SaranMenuScreen(),
+        '/detail': (context) => FoodDetailScreen(),
       },
     );
   }
@@ -88,7 +91,6 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     '600-800 Cal': 'assets/images/home/katsublack.png',
   };
 
-
   @override
   void initState() {
     super.initState();
@@ -101,13 +103,14 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     });
 
     try {
-      Map<String, dynamic> result = await _resepMakananService.filterAndSearchResepMakanan(
+      Map<String, dynamic> result =
+          await _resepMakananService.filterAndSearchResepMakanan(
         kategori: _selectedCategory,
-        kaloriMin: _selectedCalorie != null 
-            ? _calorieRanges[_selectedCalorie]![0].toDouble() 
+        kaloriMin: _selectedCalorie != null
+            ? _calorieRanges[_selectedCalorie]![0].toDouble()
             : null,
-        kaloriMax: _selectedCalorie != null 
-            ? _calorieRanges[_selectedCalorie]![1].toDouble() 
+        kaloriMax: _selectedCalorie != null
+            ? _calorieRanges[_selectedCalorie]![1].toDouble()
             : null,
         keyword: _searchKeyword.isNotEmpty ? _searchKeyword : null,
       );
@@ -161,10 +164,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
           color: const Color.fromRGBO(248, 248, 248, 1.0),
           child: SafeArea(
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10, 
-                horizontal: 16
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               child: Text(
                 'Saran Menu dari Kami',
                 style: TextStyle(
@@ -178,33 +178,32 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
         ),
       ),
       body: SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Atur center
-            children: [
-              _buildSearchBar(context),
-              const SizedBox(height: 16),
-              _buildSectionTitle('Kategori Makanan'),
-              const SizedBox(height: 8),
-              _buildFoodCategorySection(context),
-              const SizedBox(height: 16),
-              _buildSectionTitle('Penghitung Kalori'),
-              const SizedBox(height: 8),
-              _buildCalorieSection(context),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 16),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildRecipeList(context),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center, // Atur center
+              children: [
+                _buildSearchBar(context),
+                const SizedBox(height: 16),
+                _buildSectionTitle('Kategori Makanan'),
+                const SizedBox(height: 8),
+                _buildFoodCategorySection(context),
+                const SizedBox(height: 16),
+                _buildSectionTitle('Penghitung Kalori'),
+                const SizedBox(height: 8),
+                _buildCalorieSection(context),
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 16),
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildRecipeList(context),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildBottomNavItem(
@@ -236,10 +235,8 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     );
   }
 
-  BottomNavigationBarItem _buildBottomNavItem({
-    required IconData icon, 
-    required String label
-  }) {
+  BottomNavigationBarItem _buildBottomNavItem(
+      {required IconData icon, required String label}) {
     return BottomNavigationBarItem(
       icon: Icon(icon),
       label: label,
@@ -249,10 +246,7 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 16, 
-        fontWeight: FontWeight.bold
-      ),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
     );
   }
 
@@ -267,10 +261,8 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
             FluentIcons.search_12_regular,
             color: Colors.black,
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 12, 
-            horizontal: 16
-          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide.none,
@@ -288,40 +280,41 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
     );
   }
 
-Widget _buildFoodCategorySection(BuildContext context) {
-  return Center( // Memastikan semuanya di tengah
-    child: Wrap(
-      spacing: 16, // Jarak horizontal antar elemen
-      runSpacing: 16, // Jarak vertikal antar elemen (jika ada overflow ke baris baru)
-      children: _categoryMap.keys.map((category) {
-        final isSelected = _selectedCategory == _categoryMap[category];
-        return _buildCategoryItem(
-          Image.asset(
-            isSelected ? _imagesBlack[category]! : _images[category]!,
-            height: 50,
-            width: 50,
-          ),
-          category,
-          () {
-            setState(() {
-              _selectedCategory =
-                  _selectedCategory == _categoryMap[category]
-                      ? null
-                      : _categoryMap[category];
-            });
-            _fetchResepMakanan();
-          },
-          isSelected,
-        );
-      }).toList(),
-    ),
-  );
-}
+  Widget _buildFoodCategorySection(BuildContext context) {
+    return Center(
+      // Memastikan semuanya di tengah
+      child: Wrap(
+        spacing: 16, // Jarak horizontal antar elemen
+        runSpacing:
+            16, // Jarak vertikal antar elemen (jika ada overflow ke baris baru)
+        children: _categoryMap.keys.map((category) {
+          final isSelected = _selectedCategory == _categoryMap[category];
+          return _buildCategoryItem(
+            Image.asset(
+              isSelected ? _imagesBlack[category]! : _images[category]!,
+              height: 50,
+              width: 50,
+            ),
+            category,
+            () {
+              setState(() {
+                _selectedCategory = _selectedCategory == _categoryMap[category]
+                    ? null
+                    : _categoryMap[category];
+              });
+              _fetchResepMakanan();
+            },
+            isSelected,
+          );
+        }).toList(),
+      ),
+    );
+  }
 
   Widget _buildCategoryItem(
-    Widget icon, 
-    String title, 
-    VoidCallback onTap, 
+    Widget icon,
+    String title,
+    VoidCallback onTap,
     bool isSelected,
   ) {
     return GestureDetector(
@@ -355,86 +348,172 @@ Widget _buildFoodCategorySection(BuildContext context) {
     );
   }
 
-Widget _buildCalorieSection(BuildContext context) {
-  return Center(
-    child: Wrap(
-      spacing: 16, // Jarak antar elemen horizontal
-      runSpacing: 16, // Jarak antar elemen vertikal jika ada overflow
-      children: _calorieRanges.keys.map((range) {
-        final isSelected = _selectedCalorie == range;
-        return _buildCategoryItem(
-          Image.asset(
-            isSelected
-                ? _calorieImagesBlack[range]!
-                : _calorieImages[range]!,
-            height: 50,
-            width: 50,
-          ),
-          range,
-          () {
-            setState(() {
-              _selectedCalorie = _selectedCalorie == range ? null : range;
-            });
-            _fetchResepMakanan();
-          },
-          isSelected,
-        );
-      }).toList(),
-    ),
-  );
-}
+  Widget _buildCalorieSection(BuildContext context) {
+    return Center(
+      child: Wrap(
+        spacing: 16, // Jarak antar elemen horizontal
+        runSpacing: 16, // Jarak antar elemen vertikal jika ada overflow
+        children: _calorieRanges.keys.map((range) {
+          final isSelected = _selectedCalorie == range;
+          return _buildCategoryItem(
+            Image.asset(
+              isSelected ? _calorieImagesBlack[range]! : _calorieImages[range]!,
+              height: 50,
+              width: 50,
+            ),
+            range,
+            () {
+              setState(() {
+                _selectedCalorie = _selectedCalorie == range ? null : range;
+              });
+              _fetchResepMakanan();
+            },
+            isSelected,
+          );
+        }).toList(),
+      ),
+    );
+  }
 
-
-Widget _buildRecipeList(BuildContext context) {
-  return _resepMakananList.isEmpty
-      ? Center( // Tambahkan Center
-          child: const Text(
-            'Tidak ada resep ditemukan',
-            style: TextStyle(fontSize: 16),
-          ),
-        )
-      : ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _resepMakananList.length,
-          itemBuilder: (context, index) {
-            final resep = _resepMakananList[index];
-            return _buildRecipeCard(resep);
-          },
-        );
-}
+  Widget _buildRecipeList(BuildContext context) {
+    return _resepMakananList.isEmpty
+        ? Center(
+            // Tambahkan Center
+            child: const Text(
+              'Tidak ada resep ditemukan',
+              style: TextStyle(fontSize: 16),
+            ),
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _resepMakananList.length,
+            itemBuilder: (context, index) {
+              final resep = _resepMakananList[index];
+              return _buildRecipeCard(resep);
+            },
+          );
+  }
 
   Widget _buildRecipeCard(ResepMakanan resep) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Card(
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+    return GestureDetector(
+      onTap: () {
+        FoodDetailScreen.navigateToDetail(context, resep.idResep!);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                resep.namaResep ?? 'Nama resep tidak tersedia',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              // Image display
+              if (resep.gambar != null && resep.gambar!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                  child: Image.asset(
+                    resep.gambar!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 200,
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Kalori: ${resep.kaloriMakanan}',
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                resep.deskripsi ?? 'Deskripsi tidak tersedia',
-                style: const TextStyle(fontSize: 14),
+
+              // Content section
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Recipe Name
+                    Text(
+                      resep.namaResep ?? 'Nama Resep Tidak Tersedia',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Calorie Information
+                    Row(
+                      children: [
+                        Icon(
+                          FluentIcons.food_16_regular,
+                          size: 16,
+                          color: Colors.grey[700],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Kalori: ${resep.kaloriMakanan?.toStringAsFixed(0) ?? 'Tidak tersedia'} kkal',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Description
+                    Text(
+                      resep.deskripsi ?? 'Deskripsi tidak tersedia',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    // Category Chip
+                    if (resep.kategoriResep != null) ...[
+                      const SizedBox(height: 8),
+                      _buildCategoryChip(resep.kategoriResep!),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+// Helper method to create a category chip
+  Widget _buildCategoryChip(KategoriResep kategori) {
+    // Map kategori to readable string
+    final Map<KategoriResep, String> kategoriLabels = {
+      KategoriResep.sarapan: 'Sarapan',
+      KategoriResep.makan_siang: 'Makan Siang',
+      KategoriResep.makan_malam: 'Makan Malam',
+      KategoriResep.cemilan: 'Camilan',
+    };
+
+    return Chip(
+      label: Text(
+        kategoriLabels[kategori] ?? 'Kategori',
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: const Color.fromRGBO(97, 202, 61, 1.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     );
   }
 }
