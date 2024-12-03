@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Colors.green,
+        primaryColor: const Color.fromARGB(255, 6, 29, 6),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Color(0xFFE8F5E9),
@@ -41,25 +41,25 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
   late TabController _tabController;
   int _selectedIndex = 0; // State untuk mengatur BottomNavigationBar
   final List<Makanan> makananList = [
-    Makanan(namaMakanan: 'Nasi Goreng', kaloriMakanan: 100, beratMakanan: 100, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Ayam Bakar', kaloriMakanan: 200, beratMakanan: 150, kategoriMakanan: KategoriMakanan.makan_siang),
-    Makanan(namaMakanan: 'Sayur Lodeh', kaloriMakanan: 50, beratMakanan: 200, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Sate Ayam', kaloriMakanan: 150, beratMakanan: 100, kategoriMakanan: KategoriMakanan.makan_siang),
-    Makanan(namaMakanan: 'Mie Goreng', kaloriMakanan: 120, beratMakanan: 150, kategoriMakanan: KategoriMakanan.sarapan),
+    Makanan(namaMakanan: 'Almond panggang', kaloriMakanan: 100, beratMakanan: 100, kategoriMakanan: KategoriMakanan.cemilan),
+    Makanan(namaMakanan: 'Greek yogurt dengan madu', kaloriMakanan: 200, beratMakanan: 150, kategoriMakanan: KategoriMakanan.cemilan),
+    Makanan(namaMakanan: 'Smoothie protein', kaloriMakanan: 50, beratMakanan: 200, kategoriMakanan: KategoriMakanan.cemilan),
+    Makanan(namaMakanan: 'Hummus dengan potongan sayuran', kaloriMakanan: 150, beratMakanan: 100, kategoriMakanan: KategoriMakanan.cemilan),
+    Makanan(namaMakanan: 'Roti gandum alpukat', kaloriMakanan: 120, beratMakanan: 150, kategoriMakanan: KategoriMakanan.cemilan),
   ];
 
   List<Makanan> myOwnMenu = []; // Menu yang ditambahkan oleh pengguna
   List<Makanan> filteredMakananList = [];
   List<Makanan> filteredMyOwnMenu = [];
   List<Makanan> filteredAddedMenu = [];
-  Makanan? selectedMakananItem;
+  Makanan? selectedMakananItem;  // Menyimpan makanan yang sedang dipilih
 
   @override
   void initState() {
     super.initState();
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
-    filteredAddedMenu = getFilteredAddedMenu();
+    filteredAddedMenu = []; // Awalnya Added Menu kosong
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -81,36 +81,55 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
 
   List<Makanan> getFilteredAddedMenu() {
     return [
-      ...makananList.where((food) => food.beratMakanan! > 0),
-      ...myOwnMenu.where((food) => food.beratMakanan! > 0),
+      ...makananList.where((food) => food.quantity! > 0),  // Hanya masukkan makanan dengan quantity > 0
+      ...myOwnMenu.where((food) => food.quantity! > 0),
     ];
   }
 
   void addFoodQuantity(Makanan item) {
     setState(() {
-      item.beratMakanan = (item.beratMakanan! + 100); // Menambah berat untuk simulasi kuantitas
-      filteredAddedMenu = getFilteredAddedMenu();
+      item.quantity = (item.quantity ?? 0) + 1; // Menambah 1 porsi
     });
   }
 
-  void removeFoodQuantity(Makanan item) {
-    setState(() {
-      if (item.beratMakanan! > 0) {
-        item.beratMakanan = (item.beratMakanan! - 100);
-      }
-      filteredAddedMenu = getFilteredAddedMenu();
-    });
-  }
-
-  void addToAddedMenu() {
-    if (selectedMakananItem != null) {
-      setState(() {
-        selectedMakananItem!.beratMakanan = (selectedMakananItem!.beratMakanan! + 100);
-        filteredAddedMenu = getFilteredAddedMenu();
-        selectedMakananItem = null;
-      });
+void removeFoodQuantity(Makanan item) {
+  setState(() {
+    // Mengurangi jumlah porsi sebanyak 1, hanya jika jumlah porsi > 0
+    if (item.quantity! > 0) {
+      item.quantity = item.quantity! - 1;  // Mengurangi 1 porsi
     }
+    // Jika quantity = 0, hapus item dari filteredAddedMenu
+    if (item.quantity == 0) {
+      filteredAddedMenu.removeWhere((food) => food.namaMakanan == item.namaMakanan);
+    }
+  });
+}
+
+ void addToAddedMenu() {
+  if (selectedMakananItem != null && selectedMakananItem!.quantity! > 0) {
+    setState(() {
+      // Cek apakah item sudah ada di Added Menu
+      bool isItemAlreadyAdded = filteredAddedMenu.any((item) => item.namaMakanan == selectedMakananItem!.namaMakanan);
+      
+      if (isItemAlreadyAdded) {
+        // Jika sudah ada, update quantity item tersebut
+        filteredAddedMenu = filteredAddedMenu.map((item) {
+          if (item.namaMakanan == selectedMakananItem!.namaMakanan) {
+            item.quantity = (item.quantity ?? 0) + selectedMakananItem!.quantity!;  // Menambahkan quantity yang baru
+          }
+          return item;
+        }).toList();
+      } else {
+        // Jika belum ada, tambahkan item ke Added Menu
+        filteredAddedMenu.add(selectedMakananItem!);
+      }
+
+      // Reset selected item setelah ditambahkan
+      selectedMakananItem = null;
+    });
   }
+}
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -126,7 +145,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
           children: [
             SizedBox(height: 4),
             Text(
-              'Sarapan',
+              'Cemilan',
               style: TextStyle(
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.bold,
@@ -175,14 +194,14 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
           ),
         ],
       ),
-      floatingActionButton: (selectedMakananItem != null || filteredAddedMenu.isNotEmpty)
+      floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quantity! > 0)
           ? FloatingActionButton.extended(
               onPressed: addToAddedMenu,
               label: Text('Tambah'),
               backgroundColor: Color(0xFF61CA3D),
               icon: Icon(Icons.add),
             )
-          : null,
+          : null,  // Tombol hanya tampil jika ada item yang dipilih dan quantity > 0
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -252,9 +271,9 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
                         SizedBox(height: 5),
                         Text('Kalori per unit: ${item.kaloriMakanan} kal/100gr'),
                         SizedBox(height: 5),
-                        if (item.beratMakanan! > 0) ...[
-                          Text('Jumlah: ${item.beratMakanan}'),
-                          Text('Total Kalori: ${item.kaloriMakanan! * item.beratMakanan!} kal'),
+                        if (item.quantity! > 0) ...[
+                          Text('Jumlah: ${item.quantity}'),
+                          Text('Total Kalori: ${item.kaloriMakanan! * item.quantity} kal'),
                         ],
                       ],
                     ),
@@ -268,13 +287,13 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
                             icon: Icon(FluentIcons.add_square_48_filled, size: 40),
                             onPressed: () => addFoodQuantity(item),
                           ),
-                          if (item.beratMakanan! > 0)
+                          if (item.quantity! > 0)
                             IconButton(
                               icon: Icon(FluentIcons.subtract_48_filled, size: 40),
                               onPressed: () => removeFoodQuantity(item),
                             ),
                         ],
-                        if (_tabController.index == 2 && item.beratMakanan! > 0) ...[
+                        if (_tabController.index == 2 && item.quantity! > 0) ...[
                           IconButton(
                             icon: Icon(FluentIcons.delete_48_filled, size: 40),
                             onPressed: () => removeFoodQuantity(item),

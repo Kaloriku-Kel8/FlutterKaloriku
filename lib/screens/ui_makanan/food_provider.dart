@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter'; // Model Makanan yang sudah Anda buat
+import 'package:kaloriku/model/makanan.dart'; // Model Makanan yang sudah Anda buat
 
 class FoodProvider with ChangeNotifier {
   List<Makanan> _foodList = [];

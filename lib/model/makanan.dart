@@ -8,6 +8,7 @@ class Makanan {
   double? kaloriMakanan;
   double? beratMakanan;
   KategoriMakanan? kategoriMakanan;
+  int quantity; // Menambah property quantity
 
   Makanan({
     this.idMakanan,
@@ -16,6 +17,7 @@ class Makanan {
     this.kaloriMakanan,
     this.beratMakanan,
     this.kategoriMakanan,
+    this.quantity = 0, // Default quantity 0
   });
 
   // Factory method to create an instance from JSON
@@ -38,6 +40,7 @@ class Makanan {
               orElse: () => KategoriMakanan.sarapan,
             )
           : null,
+      quantity: json['quantity'] ?? 0, // Mengambil quantity dari JSON
     );
   }
 
@@ -50,6 +53,7 @@ class Makanan {
       'kalori_makanan': kaloriMakanan,
       'berat_makanan': beratMakanan,
       'kategori_makanan': kategoriMakanan?.toString().split('.').last,
+      'quantity': quantity, // Menyimpan quantity
     };
   }
 }
