@@ -7,7 +7,7 @@ import 'package:kaloriku/model/dataUser.dart';
 class UserProfilService {
   final ApiService _apiService = ApiService();
 
- 
+
   Future<Map<String, String>> _getHeaders() async {
     final headers = await _apiService.getHeaders();
     headers['Content-Type'] = 'application/json'; // Add this line
