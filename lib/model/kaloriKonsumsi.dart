@@ -1,5 +1,4 @@
-
-enum WaktuMakan { sarapan, makanSiang, makanMalam, cemilan }
+enum WaktuMakan { sarapan, makan_siang, makan_malam, cemilan }
 
 class KonsumsiKalori {
   int? idKonsumsi;
@@ -77,33 +76,3 @@ class KonsumsiKalori {
     };
   }
 }
-
-// // Contoh penggunaan
-// void main() {
-//   // JSON dari API atau database
-//   String jsonString = '''
-//     {
-//       "id_konsumsi": 1,
-//       "user_uuid": "12345-abcde",
-//       "id_makanan": 2,
-//       "id_resep": null,
-//       "nama_makanan": "Nasi Goreng",
-//       "kalori_konsumsi": 500.0,
-//       "kalori_terpenuhi": 200.0,
-//       "kalori_tersisa": 300.0,
-//       "berat_konsumsi": 150.0,
-//       "waktu_makan": "sarapan"
-//     }
-//   ''';
-
-//   // Parsing JSON menjadi objek KonsumsiKalori
-//   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-//   KonsumsiKalori konsumsiKalori = KonsumsiKalori.fromJson(jsonMap);
-
-//   print("Nama Makanan: ${konsumsiKalori.namaMakanan}");
-//   print("Kalori Konsumsi: ${konsumsiKalori.kaloriKonsumsi} kkal");
-
-//   // Mengonversi kembali ke JSON
-//   String encodedJson = jsonEncode(konsumsiKalori.toJson());
-//   print("Encoded JSON: $encodedJson");
-// }

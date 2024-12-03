@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart';
 import '../profil/profil.dart';
+import 'package:kaloriku/service/kaloriKonsumsiService.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 void main() {
   runApp(const Riwayat());
@@ -28,7 +30,14 @@ class RiwayatScreen extends StatefulWidget {
 }
 
 class _RiwayatScreenState extends State<RiwayatScreen> {
-  int _selectedIndex = 0; // Index default untuk halaman Riwayat
+  int _selectedIndex = 0;
+  late Future<List<Map<String, dynamic>>> _riwayatData;
+
+  @override
+  void initState() {
+    super.initState();
+    _riwayatData = KaloriKonsumsiService().getWeeklySummary();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -54,120 +63,153 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> riwayatData = [
-      {"tanggal": "Hari ini", "total": 3138, "terpenuhi": 620},
-      {"tanggal": "03/09/2024", "total": 3138, "terpenuhi": 796},
-      {"tanggal": "02/09/2024", "total": 3138, "terpenuhi": 1000},
-    ];
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 2,
         title: const Text(
           'Riwayat',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+              color: Colors.white), // Changed to white for better contrast
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor:
+            Colors.green, // Dark green background for better contrast
       ),
-      backgroundColor: Colors.white,
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: riwayatData.length,
-        itemBuilder: (context, index) {
-          final data = riwayatData[index];
-          final total = data["total"] as int;
-          final terpenuhi = data["terpenuhi"] as int;
-          final tersisa = total - terpenuhi;
-          final progressValue = terpenuhi / total;
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _riwayatData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data["tanggal"],
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Material(
-                elevation: 2,
-                borderRadius: BorderRadius.circular(12),
-                color: const Color.fromRGBO(227, 253, 222, 1.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            "$total Cal",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final riwayatData = snapshot.data ?? [];
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: riwayatData.length,
+            itemBuilder: (context, index) {
+              final data = riwayatData[index];
+              final total = double.tryParse(data["target_kalori"]) ?? 0;
+              final terpenuhi = double.tryParse(data["kalori_terpenuhi"]) ?? 0;
+              final tersisa = total - terpenuhi;
+              final progressValue = total != 0 ? terpenuhi / total : 0;
+
+              String status = '';
+              Color circleColor = const Color.fromARGB(255, 81, 81, 81);
+
+              if (tersisa < 0) {
+                status =
+                    'Melebihi Target ${(terpenuhi - total).toStringAsFixed(0)} Cal';
+                circleColor = const Color.fromARGB(
+                    255, 234, 72, 60); // Red for over target
+              } else if (tersisa == 0) {
+                status = 'Target Tepat';
+                circleColor = const Color.fromARGB(
+                    255, 80, 176, 83); // Green for target met
+              } else {
+                status = '${tersisa.toStringAsFixed(0)} Cal Tersisa';
+                circleColor = const Color.fromARGB(
+                    255, 61, 138, 201); // Blue for remaining calories
+              }
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  color:
+                      Colors.green.shade50, // Soft green background for cards
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data["tanggal"],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: circleColor,
+                                ),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            "Asupan Harian",
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: 150,
-                        height: 150,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            CustomCircularProgressIndicator(
-                              progress: progressValue,
-                              strokeWidth: 15,
-                              backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
-                              valueColor: const Color.fromRGBO(113, 132, 237, 1.0),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "$tersisa Cal",
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularPercentIndicator(
+                                radius: 60.0,
+                                lineWidth: 15.0,
+                                animation: true,
+                                animationDuration: 1000,
+                                percent: (progressValue > 1.0
+                                        ? 1.0
+                                        : (progressValue < 0.0
+                                            ? 0.0
+                                            : progressValue))
+                                    .toDouble(),
+                                center: Text(
+                                  "${terpenuhi.toInt()} Cal",
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
                                 ),
-                                const Text(
-                                  "Tersisa",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ],
-                            ),
-                          ],
+                                circularStrokeCap: CircularStrokeCap.round,
+                                progressColor: circleColor,
+                                backgroundColor: const Color(0xFFE5E5E5),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            "$terpenuhi Cal",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "${total.toStringAsFixed(0)} Cal",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                "Target Harian",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color.fromARGB(255, 50, 47, 47)),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            "Terpenuhi",
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+              );
+            },
           );
         },
       ),
@@ -193,7 +235,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.black, // Change to green for consistency
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         showUnselectedLabels: true,
