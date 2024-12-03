@@ -6,23 +6,6 @@ import 'editprofil.dart';
 import 'package:kaloriku/service/userprofilservice.dart';
 import 'package:kaloriku/model/dataUser.dart';
 
-void main() {
-  runApp(const Profil());
-}
-
-class Profil extends StatelessWidget {
-  const Profil({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.green),
-      home: const ProfilScreen(),
-    );
-  }
-}
-
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({Key? key}) : super(key: key);
 
@@ -30,8 +13,9 @@ class ProfilScreen extends StatefulWidget {
   State<ProfilScreen> createState() => _ProfilScreenState();
 }
 
-class _ProfilScreenState extends State<ProfilScreen> {
-  int _selectedIndex = 2; 
+class _ProfilScreenState extends State<ProfilScreen>
+    with WidgetsBindingObserver {
+  int _selectedIndex = 2;
   late UserProfilService _userProfilService;
   DataUser? _userData;
   bool _isLoading = true;
@@ -40,23 +24,58 @@ class _ProfilScreenState extends State<ProfilScreen> {
   void initState() {
     super.initState();
     _userProfilService = UserProfilService();
+    WidgetsBinding.instance.addObserver(this);
     _fetchUserProfile();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Refresh data ketika screen menjadi aktif
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _fetchUserProfile();
+    }
+  }
+
+  // Auto refresh saat fokus kembali ke screen ini
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      route.addScopedWillPopCallback(() async {
+        _fetchUserProfile();
+        return true;
+      });
+    }
   }
 
   Future<void> _fetchUserProfile() async {
     try {
       final userData = await _userProfilService.getUserProfile();
-      setState(() {
-        _userData = userData;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _userData = userData;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -72,13 +91,29 @@ class _ProfilScreenState extends State<ProfilScreen> {
       );
     } else if (index == 1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+        const SnackBar(
+          content: Text("Halaman Pertanyaan belum tersedia"),
+          backgroundColor: Colors.orange,
+        ),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const RiwayatScreen()),
       );
+    }
+  }
+
+  Future<void> _navigateToEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfil(dataUser: _userData),
+      ),
+    );
+
+    if (result == true || result == null) {
+      await _fetchUserProfile();
     }
   }
 
@@ -89,78 +124,145 @@ class _ProfilScreenState extends State<ProfilScreen> {
         backgroundColor: Colors.green,
         title: const Text(
           'Profil',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _userData == null
-              ? const Center(child: Text('Data pengguna tidak tersedia'))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Color.fromRGBO(209, 255, 193, 1.0),
-                        child: Icon(
-                          FluentIcons.person_12_regular,
-                          size: 100,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _userData?.nama ?? 'Nama tidak tersedia',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => EditProfil()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+      backgroundColor: Colors.grey[50],
+      body: RefreshIndicator(
+        onRefresh: _fetchUserProfile,
+        child: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
+              )
+            : _userData == null
+                ? const Center(child: Text('Data pengguna tidak tersedia'))
+                : SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        // Profile Header Section
+                        Container(
+                          width: double.infinity,
+                          color: Colors.green,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  FluentIcons.person_12_regular,
+                                  size: 40,
+                                  color: Colors.green[700],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _userData?.nama ?? 'Nama tidak tersedia',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextButton.icon(
+                                onPressed: _navigateToEditProfile,
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                label: const Text(
+                                  'Edit Profil',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.3),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 8,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
                           ),
                         ),
-                        child: const Text(
-                          'Edit Profil',
-                          style: TextStyle(color: Colors.white),
+                        // Profile Info Section
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  'Informasi Pribadi',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    children: [
+                                      _buildInfoRow('Usia',
+                                          '${_userData?.umur ?? '-'} Tahun'),
+                                      _buildInfoRow('Jenis Kelamin',
+                                          _userData?.jenisKelamin?.name ?? '-'),
+                                      _buildInfoRow('Berat Badan',
+                                          '${_userData?.beratBadan?.toStringAsFixed(2) ?? '-'} Kg'),
+                                      _buildInfoRow('Tinggi Badan',
+                                          '${_userData?.tinggiBadan?.toStringAsFixed(2) ?? '-'} cm'),
+                                      _buildInfoRow(
+                                          'Tingkat Aktivitas',
+                                          _userData?.tingkatAktivitas?.name ??
+                                              '-'),
+                                      _buildInfoRow('Tujuan',
+                                          _userData?.tujuan?.name ?? '-'),
+                                      _buildInfoRow('BMI',
+                                          '${_userData?.bmi?.toStringAsFixed(2) ?? '-'}'),
+                                      _buildInfoRow('BMI Kategori',
+                                          _userData?.bmiKategori?.name ?? '-'),
+                                      _buildInfoRow('Target Kalori',
+                                          '${_userData?.targetKalori?.toStringAsFixed(2) ?? '-'} Kcal'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      _buildProfileRow('Usia', '${_userData?.umur ?? '-'} Tahun'),
-                      _buildProfileRow('Jenis Kelamin', 
-                          _userData?.jenisKelamin?.name ?? '-'),
-                      _buildProfileRow('Berat Badan', 
-                          '${_userData?.beratBadan?.toStringAsFixed(2) ?? '-'} Kg'),
-                      _buildProfileRow('Tinggi Badan', 
-                          '${_userData?.tinggiBadan?.toStringAsFixed(2) ?? '-'} cm'),
-                      _buildProfileRow('Tingkat Aktivitas', 
-                          _userData?.tingkatAktivitas?.name ?? '-'),
-                      _buildProfileRow('Tujuan', 
-                          _userData?.tujuan?.name ?? '-'),
-                      _buildProfileRow('BMI', 
-                          '${_userData?.bmi?.toStringAsFixed(2) ?? '-'}'),
-                      _buildProfileRow('BMI Kategori', 
-                          _userData?.bmiKategori?.name ?? '-'),
-                      _buildProfileRow('Target Kalori', 
-                          '${_userData?.targetKalori?.toStringAsFixed(2) ?? '-'} Kcal'),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildBottomNavItem(
@@ -183,22 +285,38 @@ class _ProfilScreenState extends State<ProfilScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
+        elevation: 8,
       ),
     );
   }
 
-  Widget _buildProfileRow(String title, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 16)),
-        Text(value, style: const TextStyle(fontSize: 16)),
-      ],
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

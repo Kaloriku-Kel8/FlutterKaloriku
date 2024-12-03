@@ -7,8 +7,11 @@ import 'package:kaloriku/model/dataUser.dart';
 class UserProfilService {
   final ApiService _apiService = ApiService();
 
+ 
   Future<Map<String, String>> _getHeaders() async {
-    return await _apiService.getHeaders();
+    final headers = await _apiService.getHeaders();
+    headers['Content-Type'] = 'application/json'; // Add this line
+    return headers;
   }
 
   /// Get user profile data
@@ -34,13 +37,13 @@ class UserProfilService {
   }
 
   /// Update user profile data
-  Future<DataUser> updateUserProfile(DataUser userData) async {
+   Future<DataUser> updateUserProfile(DataUser userData) async {
     try {
       final headers = await _getHeaders();
       final response = await http.put(
         Uri.http(AppConfig.API_HOST, '/api/UserData/user-update'),
         headers: headers,
-        body: userData.toJson(),
+        body: jsonEncode(userData.toJson()), // Encode the body as JSON
       );
 
       if (response.statusCode == 200) {
