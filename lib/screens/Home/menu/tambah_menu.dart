@@ -124,6 +124,7 @@ class _TambahMenuScreenState extends State<TambahMenuScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
+                  dropdownColor: Colors.white,
                   value: selectedCategory,
                   items: foodCategories.map((String category) {
                     return DropdownMenuItem<String>(

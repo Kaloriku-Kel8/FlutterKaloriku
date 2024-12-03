@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/screens/Home/riwayat.dart';
 import '../Home/home_menu.dart';
+import 'editprofil.dart';
 
 void main() {
   runApp(const Profil());
@@ -85,8 +86,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Fitur Edit Profil belum tersedia")),
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfil()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -129,6 +131,22 @@ class _ProfilScreenState extends State<ProfilScreen> {
               children: const [
                 Text('Tinggi Badan', style: TextStyle(fontSize: 16)),
                 Text('168 cm', style: TextStyle(fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text('Tingkat Aktivitas', style: TextStyle(fontSize: 16)),
+                Text('Rendah', style: TextStyle(fontSize: 16)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text('Tujuan', style: TextStyle(fontSize: 16)),
+                Text('Menambah', style: TextStyle(fontSize: 16)),
               ],
             ),
             const SizedBox(height: 8),
