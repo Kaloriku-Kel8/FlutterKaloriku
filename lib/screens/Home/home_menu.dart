@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_cemilan.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_makanMalam.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_makanSiang.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_sarapan.dart';
 import 'latihan.dart';
 import 'riwayat.dart';
 import 'saran_menu.dart';
@@ -216,15 +220,36 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            _buildMealCard('Sarapan', '391 / 635 Cal', Image.asset('assets/images/home/breakfast.png')),
-            _buildMealCard('Makan Siang', '856 / 847 Cal', Image.asset('assets/images/home/lunch.png')),
-            _buildMealCard('Makan Malam', '379 / 529 Cal', Image.asset('assets/images/home/dinner.png')),
-            _buildMealCard('Camilan', '159 / 200 Cal', Image.asset('assets/images/home/snack.png')),
-          ],
-        ),
-      ),
-    );
-  }
+
+            _buildMealCard('Sarapan', '391 / 635 Cal', Image.asset('assets/images/home/breakfast.png'), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  Sarapan()), // Ganti SarapanScreen() dengan halaman yang sesuai
+              );
+            }),
+            _buildMealCard('Makan Siang', '856 / 847 Cal', Image.asset('assets/images/home/lunch.png'), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  MakanSiang()), // Ganti MakanSiangScreen() dengan halaman yang sesuai
+              );
+            }),
+            _buildMealCard('Makan Malam', '379 / 529 Cal', Image.asset('assets/images/home/dinner.png'), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  MakanMalam()), // Ganti MakanMalamScreen() dengan halaman yang sesuai
+              );
+            }),
+            _buildMealCard('Camilan', '159 / 200 Cal', Image.asset('assets/images/home/snack.png'), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  Cemilan()), // Ganti CamilanScreen() dengan halaman yang sesuai
+              );
+            }),
+                      ],
+                    ),
+                  ),
+                );
+              }
 
   Widget _buildFeatureButton(Widget iconWidget, String label, VoidCallback onPressed) {
     return GestureDetector(
@@ -252,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 }
 
-  Widget _buildMealCard(String title, String calories, dynamic icon) {
+  Widget _buildMealCard(String title, String calories, dynamic icon, VoidCallback onTap) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: const Color.fromRGBO(227, 253, 222, 1.0),
