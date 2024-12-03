@@ -3,6 +3,8 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/screens/Home/riwayat.dart';
 import '../Home/home_menu.dart';
 import 'editprofil.dart';
+import 'package:kaloriku/service/userprofilservice.dart';
+import 'package:kaloriku/model/dataUser.dart';
 
 void main() {
   runApp(const Profil());
@@ -29,7 +31,34 @@ class ProfilScreen extends StatefulWidget {
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
-  int _selectedIndex = 2; // Index default untuk halaman Profil
+  int _selectedIndex = 2; 
+  late UserProfilService _userProfilService;
+  DataUser? _userData;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _userProfilService = UserProfilService();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    try {
+      final userData = await _userProfilService.getUserProfile();
+      setState(() {
+        _userData = userData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -65,101 +94,73 @@ class _ProfilScreenState extends State<ProfilScreen> {
         elevation: 0,
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Color.fromRGBO(209, 255, 193, 1.0),
-              child: Icon(
-                FluentIcons.person_12_regular,
-                size: 100,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Alfonso Mayzart',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => EditProfil()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _userData == null
+              ? const Center(child: Text('Data pengguna tidak tersedia'))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Color.fromRGBO(209, 255, 193, 1.0),
+                        child: Icon(
+                          FluentIcons.person_12_regular,
+                          size: 100,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _userData?.nama ?? 'Nama tidak tersedia',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditProfil()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Edit Profil',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      _buildProfileRow('Usia', '${_userData?.umur ?? '-'} Tahun'),
+                      _buildProfileRow('Jenis Kelamin', 
+                          _userData?.jenisKelamin?.name ?? '-'),
+                      _buildProfileRow('Berat Badan', 
+                          '${_userData?.beratBadan?.toStringAsFixed(2) ?? '-'} Kg'),
+                      _buildProfileRow('Tinggi Badan', 
+                          '${_userData?.tinggiBadan?.toStringAsFixed(2) ?? '-'} cm'),
+                      _buildProfileRow('Tingkat Aktivitas', 
+                          _userData?.tingkatAktivitas?.name ?? '-'),
+                      _buildProfileRow('Tujuan', 
+                          _userData?.tujuan?.name ?? '-'),
+                      _buildProfileRow('BMI', 
+                          '${_userData?.bmi?.toStringAsFixed(2) ?? '-'}'),
+                      _buildProfileRow('BMI Kategori', 
+                          _userData?.bmiKategori?.name ?? '-'),
+                      _buildProfileRow('Target Kalori', 
+                          '${_userData?.targetKalori?.toStringAsFixed(2) ?? '-'} Kcal'),
+                    ],
+                  ),
                 ),
-              ),
-              child: const Text('Edit Profil', style: TextStyle(color: Colors.white),),
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Usia', style: TextStyle(fontSize: 16)),
-                Text('20 Tahun', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Jenis Kelamin', style: TextStyle(fontSize: 16)),
-                Text('Laki-Laki', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Berat Badan', style: TextStyle(fontSize: 16)),
-                Text('60 Kg', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Tinggi Badan', style: TextStyle(fontSize: 16)),
-                Text('168 cm', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Tingkat Aktivitas', style: TextStyle(fontSize: 16)),
-                Text('Rendah', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Tujuan', style: TextStyle(fontSize: 16)),
-                Text('Menambah', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('BMI', style: TextStyle(fontSize: 16)),
-                Text('999', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildBottomNavItem(
@@ -188,6 +189,16 @@ class _ProfilScreenState extends State<ProfilScreen> {
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
       ),
+    );
+  }
+
+  Widget _buildProfileRow(String title, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: const TextStyle(fontSize: 16)),
+        Text(value, style: const TextStyle(fontSize: 16)),
+      ],
     );
   }
 
