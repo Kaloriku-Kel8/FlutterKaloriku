@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart';
 import 'latihan/listlatihan.dart';
+import '../profil/profil.dart';
 
 void main() {
   runApp(const LatihanApp());
@@ -22,7 +23,6 @@ class LatihanApp extends StatelessWidget {
         ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const LatihanScreen(),
         '/home': (context) => const HomeMenuScreen(),
         '/list': (context) => const ListLatihan(),
       },
@@ -55,15 +55,16 @@ class _LatihanScreenState extends State<LatihanScreen> {
       const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
     );
   } else if (index == 2) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Halaman Profil belum tersedia")),
-    );
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      );
   }
 }
 
 
 
- @override
+@override
 Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Colors.white, // Pastikan latar belakang Scaffold putih

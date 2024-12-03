@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import '../latihan.dart';
 
 void main() {
   runApp(const ListLatihan());
@@ -150,20 +149,17 @@ class _ListLatihanScreenState extends State<ListLatihanScreen> {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
+      backgroundColor: Colors.white,
+      elevation: 2,
       title: Text(widget.latihanType),
       leading: IconButton(
         icon: const Icon(FluentIcons.arrow_left_12_regular),
         onPressed: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-          builder: (context) => LatihanApp(),
-          ),
-        );
+          Navigator.pop(context); // Go back to the previous screen
         },
       ),
     ),
-    backgroundColor: Colors.white, // Tambahkan ini untuk background putih
+    backgroundColor: Colors.white, // Set global background color
     body: Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView.builder(
@@ -171,12 +167,14 @@ Widget build(BuildContext context) {
         itemBuilder: (context, index) {
           final latihan = latihanList[index];
           return Card(
+            color: const Color.fromRGBO(248, 248, 248, 1.0), // Card background color
+            elevation: 2, // Add elevation for shadow
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  // Image centered
+                  // Image
                   Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
@@ -213,5 +211,5 @@ Widget build(BuildContext context) {
       ),
     ),
   );
-}
+  }
 }
