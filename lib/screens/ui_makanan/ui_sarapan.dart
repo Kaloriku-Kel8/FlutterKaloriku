@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
+import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 
 void main() {
   runApp(Sarapan());
@@ -39,28 +40,38 @@ class FoodPortionList extends StatefulWidget {
 
 class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _selectedIndex = 0; // State untuk mengatur BottomNavigationBar
-  final List<Makanan> makananList = [
-    Makanan(namaMakanan: 'Porridge Kacang Almond', kaloriMakanan: 100, beratMakanan: 100, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Avocado toast dengan telur', kaloriMakanan: 200, beratMakanan: 150, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Oatmeal pisang', kaloriMakanan: 50, beratMakanan: 200, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Smoothie bowl', kaloriMakanan: 150, beratMakanan: 100, kategoriMakanan: KategoriMakanan.sarapan),
-    Makanan(namaMakanan: 'Telur rebus dan roti gandum', kaloriMakanan: 120, beratMakanan: 150, kategoriMakanan: KategoriMakanan.sarapan),
-  ];
+  int _selectedIndex = 0;
+  late MakananService _makananService;
 
-  List<Makanan> myOwnMenu = []; // Menu yang ditambahkan oleh pengguna
+  List<Makanan> makananList = [];  // Ini akan di-update dari API
   List<Makanan> filteredMakananList = [];
+  List<Makanan> myOwnMenu = [];
   List<Makanan> filteredMyOwnMenu = [];
   List<Makanan> filteredAddedMenu = [];
-  Makanan? selectedMakananItem;  // Menyimpan makanan yang sedang dipilih
+  Makanan? selectedMakananItem;
 
   @override
   void initState() {
     super.initState();
-    filteredMakananList = makananList; // Menampilkan semua item makanan di awal
-    filteredMyOwnMenu = myOwnMenu;
-    filteredAddedMenu = []; // Awalnya Added Menu kosong
+    _makananService = MakananService();
     _tabController = TabController(length: 3, vsync: this);
+    fetchMakananData();  // Mengambil data dari API saat awal
+  }
+
+  Future<void> fetchMakananData() async {
+    try {
+      List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
+        category: "sarapan",  // Mengambil makanan dengan kategori sarapan
+        keyword: '',
+        isGeneral: false,
+      );
+      setState(() {
+        makananList = fetchedMakanan;
+        filteredMakananList = fetchedMakanan;  // Menampilkan semua item makanan
+      });
+    } catch (e) {
+      print('Error fetching makanan: $e');
+    }
   }
 
   void filterSearchResults(String query) {
@@ -68,11 +79,9 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
       filteredMakananList = makananList
           .where((food) => food.namaMakanan!.toLowerCase().contains(query.toLowerCase()))
           .toList();
-
       filteredMyOwnMenu = myOwnMenu
           .where((food) => food.namaMakanan!.toLowerCase().contains(query.toLowerCase()))
           .toList();
-
       filteredAddedMenu = getFilteredAddedMenu().where((food) {
         return food.namaMakanan!.toLowerCase().contains(query.toLowerCase());
       }).toList();
@@ -92,49 +101,36 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
     });
   }
 
-void removeFoodQuantity(Makanan item) {
-  setState(() {
-    // Mengurangi jumlah porsi sebanyak 1, hanya jika jumlah porsi > 0
-    if (item.quantity! > 0) {
-      item.quantity = item.quantity! - 1;  // Mengurangi 1 porsi
-    }
-    // Jika quantity = 0, hapus item dari filteredAddedMenu
-    if (item.quantity == 0) {
-      filteredAddedMenu.removeWhere((food) => food.namaMakanan == item.namaMakanan);
-    }
-  });
-}
-
- void addToAddedMenu() {
-  if (selectedMakananItem != null && selectedMakananItem!.quantity! > 0) {
+  void removeFoodQuantity(Makanan item) {
     setState(() {
-      // Cek apakah item sudah ada di Added Menu
-      bool isItemAlreadyAdded = filteredAddedMenu.any((item) => item.namaMakanan == selectedMakananItem!.namaMakanan);
-      
-      if (isItemAlreadyAdded) {
-        // Jika sudah ada, update quantity item tersebut
-        filteredAddedMenu = filteredAddedMenu.map((item) {
-          if (item.namaMakanan == selectedMakananItem!.namaMakanan) {
-            item.quantity = (item.quantity ?? 0) + selectedMakananItem!.quantity!;  // Menambahkan quantity yang baru
-          }
-          return item;
-        }).toList();
-      } else {
-        // Jika belum ada, tambahkan item ke Added Menu
-        filteredAddedMenu.add(selectedMakananItem!);
+      if (item.quantity! > 0) {
+        item.quantity = item.quantity! - 1;  // Mengurangi 1 porsi
       }
-
-      // Reset selected item setelah ditambahkan
-      selectedMakananItem = null;
+      if (item.quantity == 0) {
+        filteredAddedMenu.removeWhere((food) => food.namaMakanan == item.namaMakanan);
+      }
     });
   }
-}
 
+  void addToAddedMenu() {
+    if (selectedMakananItem != null && selectedMakananItem!.quantity! > 0) {
+      setState(() {
+        bool isItemAlreadyAdded = filteredAddedMenu.any((item) => item.namaMakanan == selectedMakananItem!.namaMakanan);
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+        if (isItemAlreadyAdded) {
+          filteredAddedMenu = filteredAddedMenu.map((item) {
+            if (item.namaMakanan == selectedMakananItem!.namaMakanan) {
+              item.quantity = (item.quantity ?? 0) + selectedMakananItem!.quantity!;  // Update quantity
+            }
+            return item;
+          }).toList();
+        } else {
+          filteredAddedMenu.add(selectedMakananItem!);
+        }
+
+        selectedMakananItem = null;
+      });
+    }
   }
 
   @override
@@ -201,7 +197,7 @@ void removeFoodQuantity(Makanan item) {
               backgroundColor: Color(0xFF61CA3D),
               icon: Icon(Icons.add),
             )
-          : null,  // Tombol hanya tampil jika ada item yang dipilih dan quantity > 0
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -233,81 +229,99 @@ void removeFoodQuantity(Makanan item) {
     );
   }
 
-  Widget buildFoodList(List<Makanan> makananList, {required bool isAddedMenu}) {
-    return ListView.builder(
-      itemCount: makananList.length,
-      itemBuilder: (context, index) {
-        Makanan item = makananList[index];
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (_tabController.index != 2) {
-                selectedMakananItem = (selectedMakananItem == item) ? null : item;
-              }
-            });
-          },
-          child: Card(
-            margin: EdgeInsets.all(8),
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: selectedMakananItem == item
-                    ? Color(0xFF61CA3D)
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.namaMakanan ?? '', style: TextStyle(fontSize: 18)),
-                        SizedBox(height: 5),
-                        Text('Kalori per unit: ${item.kaloriMakanan} kal/100gr'),
-                        SizedBox(height: 5),
-                        if (item.quantity! > 0) ...[
-                          Text('Jumlah: ${item.quantity}'),
-                          Text('Total Kalori: ${item.kaloriMakanan! * item.quantity} kal'),
-                        ],
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                        if (_tabController.index == 0 || _tabController.index == 1) ...[
-                          IconButton(
-                            icon: Icon(FluentIcons.add_square_48_filled, size: 40),
-                            onPressed: () => addFoodQuantity(item),
-                          ),
-                          if (item.quantity! > 0)
-                            IconButton(
-                              icon: Icon(FluentIcons.subtract_48_filled, size: 40),
-                              onPressed: () => removeFoodQuantity(item),
-                            ),
-                        ],
-                        if (_tabController.index == 2 && item.quantity! > 0) ...[
-                          IconButton(
-                            icon: Icon(FluentIcons.delete_48_filled, size: 40),
-                            onPressed: () => removeFoodQuantity(item),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+Widget buildFoodList(List<Makanan> foods, {bool isAddedMenu = false}) {
+  return ListView.builder(
+    itemCount: foods.length,
+    itemBuilder: (context, index) {
+      Makanan food = foods[index];
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            if (_tabController.index != 2) {
+              selectedMakananItem = (selectedMakananItem == food) ? null : food;
+            }
+          });
+        },
+        child: Card(
+          margin: EdgeInsets.all(8),
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: selectedMakananItem == food ? Color(0xFF61CA3D) : Colors.transparent,
+              width: 2,
             ),
           ),
-        );
-      },
-    );
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Nama makanan
+                      Text(food.namaMakanan ?? '', style: TextStyle(fontSize: 18)),
+                      SizedBox(height: 5),
+                      // Kalori per unit (dalam 100g)
+                      Text('Kalori per unit: ${food.kaloriMakanan} kal/100gr'),
+                      SizedBox(height: 5),
+                      // Menampilkan jumlah porsi jika quantity lebih dari 0
+                      if (food.quantity != null && food.quantity! > 0) ...[
+                        Text('Jumlah: ${food.quantity}'),
+                        // Total kalori dihitung berdasarkan quantity
+                        Text('Total Kalori: ${food.kaloriMakanan! * food.quantity!} kal'),
+                      ],
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      // Jika bukan menu yang sudah ditambahkan (Added Menu), tampilkan tombol add/remove
+                      if (!isAddedMenu) ...[
+                        IconButton(
+                          icon: Icon(FluentIcons.add_square_48_filled, size: 40),
+                          onPressed: () {
+                            addFoodQuantity(food);  // Menambah porsi makanan
+                          },
+                        ),
+                        // Tombol remove hanya muncul jika quantity lebih dari 0
+                        if (food.quantity! > 0)
+                          IconButton(
+                            icon: Icon(FluentIcons.subtract_48_filled, size: 40),
+                            onPressed: () {
+                              removeFoodQuantity(food);  // Mengurangi porsi makanan
+                            },
+                          ),
+                      ],
+                      // Jika menu sudah ditambahkan, tampilkan tombol remove
+                      if (isAddedMenu && food.quantity! > 0) ...[
+                        IconButton(
+                          icon: Icon(FluentIcons.delete_48_filled, size: 40),
+                          onPressed: () {
+                            removeFoodQuantity(food);  // Menghapus makanan dari Added Menu
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }

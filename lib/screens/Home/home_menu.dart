@@ -277,10 +277,12 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 }
 
-  Widget _buildMealCard(String title, String calories, dynamic icon, VoidCallback onTap) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: const Color.fromRGBO(227, 253, 222, 1.0),
+Widget _buildMealCard(String title, String calories, dynamic icon, VoidCallback onTap) {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    color: const Color.fromRGBO(227, 253, 222, 1.0),
+    child: GestureDetector(
+      onTap: onTap, // Memanggil onTap ketika card ditekan
       child: ListTile(
         leading: icon is Image
             ? icon // Jika `icon` adalah Image, gunakan langsung.
@@ -289,8 +291,9 @@ class _HomeScreenState extends State<HomeScreen> {
         subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
         trailing: const Icon(FluentIcons.add_square_48_filled, size: 50, color: Colors.green),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class CustomCircularProgressIndicator extends StatelessWidget {
