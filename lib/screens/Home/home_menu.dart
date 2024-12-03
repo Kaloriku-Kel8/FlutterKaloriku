@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'latihan.dart';
 import 'riwayat.dart';
 import 'saran_menu.dart';
+import 'harian/asupanharian.dart';
 import '../profil/profil.dart';
 import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 
@@ -176,19 +177,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSummaryCard() {
-    return Material(
-      elevation: 2,
-      borderRadius: BorderRadius.circular(12),
-      color: const Color.fromRGBO(227, 253, 222, 1.0),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildSummaryColumn('${totalCalorie.toInt()} Cal', 'Asupan Harian'),
-            SizedBox(
+  return Material(
+    elevation: 2,
+    borderRadius: BorderRadius.circular(12),
+    color: const Color.fromRGBO(227, 253, 222, 1.0),
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildSummaryColumn('${totalCalorie.toInt()} Cal', 'Asupan Harian'),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AsupanHarianScreen(),
+                ),
+              );
+            },
+            child: SizedBox(
               width: 150,
               height: 150,
               child: Stack(
@@ -198,8 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     progress: progressValue,
                     strokeWidth: 15,
                     backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
-                    valueColor:
-                        circleColor, // Menyesuaikan dengan warna dinamis
+                    valueColor: circleColor, // Menyesuaikan dengan warna dinamis
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -226,12 +235,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            _buildSummaryColumn('${consumedCalorie.toInt()} Cal', 'Terpenuhi'),
-          ],
-        ),
+          ),
+          _buildSummaryColumn('${consumedCalorie.toInt()} Cal', 'Terpenuhi'),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildSummaryColumn(String value, String label) {
     return Column(

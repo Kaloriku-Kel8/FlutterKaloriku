@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:intl/intl.dart';
+import '../home_menu.dart';
+import 'package:kaloriku/screens/profil/profil.dart';
+
+// Import necessary services and models
+import 'package:kaloriku/model/kaloriKonsumsi.dart';
+import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 
 void main() {
   runApp(const AsupanHarianScreen());
@@ -31,11 +38,14 @@ class AsupanHarianHome extends StatefulWidget {
 class _AsupanHarianHomeState extends State<AsupanHarianHome> {
   int _selectedIndex = 0;
   String? _selectedCategory;
-  final Map<String, String> _categoryMap = {
-    'Sarapan': 'Sarapan',
-    'Makan Siang': 'Makan Siang',
-    'Makan Malam': 'Makan Malam',
-    'Camilan': 'Camilan',
+  final KaloriKonsumsiService _kaloriKonsumsiService = KaloriKonsumsiService();
+
+  // Mapping between UI categories and backend enum
+  final Map<String, WaktuMakan> _categoryMap = {
+    'Sarapan': WaktuMakan.sarapan,
+    'Makan Siang': WaktuMakan.makan_siang,
+    'Makan Malam': WaktuMakan.makan_malam,
+    'Camilan': WaktuMakan.cemilan,
   };
 
   final Map<String, String> _images = {
@@ -52,25 +62,52 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
     'Camilan': 'assets/images/home/snackblack.png',
   };
 
-  final List<Map<String, String>> mealData = [
-    {'kategori': 'Sarapan', 'nama': 'Oatmeal', 'kalori': '300 Cal'},
-    {'kategori': 'Makan Siang', 'nama': 'Nasi Ayam', 'kalori': '450 Cal'},
-    {'kategori': 'Makan Malam', 'nama': 'Salad', 'kalori': '200 Cal'},
-    {'kategori': 'Camilan', 'nama': 'Biskuit', 'kalori': '150 Cal'},
-  ];
+  List<KonsumsiKalori> _todayMeals = [];
+  double _totalCalorie = 3138; // Default total daily calorie
+  double _consumedCalorie = 0;
+  double _remainingCalorie = 0;
 
-  void _onItemTapped(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _fetchTodayMeals();
+  }
+
+  // Fetch today's meals from backend
+  Future<void> _fetchTodayMeals() async {
+    try {
+      final meals = await _kaloriKonsumsiService.getKonsumsiKaloriToday();
+      
+      setState(() {
+        _todayMeals = meals;
+        _consumedCalorie = meals.fold(0, (sum, meal) => sum + (meal.kaloriKonsumsi ?? 0));
+        _remainingCalorie = _totalCalorie - _consumedCalorie;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching meals: $e')),
+      );
+    }
+  }
+
+void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    if (index == 1) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+      );
+    } else if (index == 1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
       );
     } else if (index == 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Profil belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
   }
@@ -81,7 +118,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         spacing: 16,
         runSpacing: 16,
         children: _categoryMap.keys.map((category) {
-          final isSelected = _selectedCategory == _categoryMap[category];
+          final isSelected = _selectedCategory == category;
           return _buildCategoryItem(
             Image.asset(
               isSelected ? _imagesBlack[category]! : _images[category]!,
@@ -91,9 +128,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
             category,
             () {
               setState(() {
-                _selectedCategory = _selectedCategory == _categoryMap[category]
-                    ? null
-                    : _categoryMap[category];
+                _selectedCategory = _selectedCategory == category ? null : category;
               });
             },
             isSelected,
@@ -140,18 +175,23 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
     );
   }
 
+  // Filter meals based on selected category
+  List<KonsumsiKalori> _getFilteredMeals() {
+    if (_selectedCategory == null) return _todayMeals;
+    
+    return _todayMeals.where((meal) {
+      final category = _categoryMap.keys.firstWhere(
+        (key) => _categoryMap[key] == meal.waktuMakan,
+        orElse: () => '',
+      );
+      return category == _selectedCategory;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    double totalCalorie = 3138;
-    double consumedCalorie = 1000;
-    double remainingCalorie = totalCalorie - consumedCalorie;
-    double progressValue = consumedCalorie / totalCalorie;
-
-    List<Map<String, String>> filteredMeals = _selectedCategory == null
-        ? mealData
-        : mealData
-            .where((meal) => meal['kategori'] == _selectedCategory)
-            .toList();
+    final filteredMeals = _getFilteredMeals();
+    final progressValue = _consumedCalorie / _totalCalorie;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -207,7 +247,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
                     Column(
                       children: [
                         Text(
-                          '${totalCalorie.toInt()} Cal',
+                          '${_totalCalorie.toInt()} Cal',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const Text('Asupan Harian', style: TextStyle(fontSize: 10)),
@@ -229,7 +269,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '${remainingCalorie.toInt()} Cal',
+                                '${_remainingCalorie.toInt()} Cal',
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const Text('Tersisa', style: TextStyle(fontSize: 10)),
@@ -241,7 +281,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
                     Column(
                       children: [
                         Text(
-                          '${consumedCalorie.toInt()} Cal',
+                          '${_consumedCalorie.toInt()} Cal',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const Text('Terpenuhi', style: TextStyle(fontSize: 10)),
@@ -263,8 +303,10 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(meal['nama']!, style: const TextStyle(fontSize: 16)),
-                      Text(meal['kalori']!, style: const TextStyle(fontSize: 16)),
+                      Text(meal.namaMakanan ?? 'Unnamed Meal', 
+                        style: const TextStyle(fontSize: 16)),
+                      Text('${meal.kaloriKonsumsi?.toStringAsFixed(0) ?? '0'} Cal', 
+                        style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),
@@ -277,7 +319,7 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
   }
 }
 
-// Widget Kustom
+// The CustomCircularProgressIndicator remains the same as in the original file
 class CustomCircularProgressIndicator extends StatelessWidget {
   final double progress;
   final double strokeWidth;

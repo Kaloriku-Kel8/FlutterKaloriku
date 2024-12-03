@@ -102,7 +102,7 @@ class KaloriKonsumsiService {
   }
 
   // Update konsumsi kalori
-  Future<KonsumsiKalori> updateKonsumsiKalori(
+  Future<KonsumsiKalori> updateKonsumsiKalori( //circular progress
       String id, KonsumsiKalori konsumsi) async {
     try {
       final headers = await _getHeaders();
@@ -188,7 +188,7 @@ class KaloriKonsumsiService {
   }
 
   // Get konsumsi by day and category
-  Future<Map<String, dynamic>> getKonsumsiByDayAndCategory(
+  Future<Map<String, dynamic>> getKonsumsiByDayAndCategory( //filter categori
       String date, String category) async {
     try {
       final headers = await _getHeaders();
