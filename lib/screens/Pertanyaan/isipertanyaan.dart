@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:kaloriku/service/forumService.dart';
+import 'package:kaloriku/model/qna.dart';
+import 'package:kaloriku/model/komentar.dart';
+import 'pertanyaan.dart';
 
 void main() {
   runApp(IsiPertanyaanScreen());
 }
+
 
 class IsiPertanyaanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: IsiPertanyaanPage(),
+      home: IsiPertanyaanPage(questionId: ''),
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -22,66 +27,102 @@ class IsiPertanyaanScreen extends StatelessWidget {
 }
 
 class IsiPertanyaanPage extends StatefulWidget {
+  final String questionId;
+
+  const IsiPertanyaanPage({Key? key, required this.questionId}) : super(key: key);
+
   @override
   _IsiPertanyaanPageState createState() => _IsiPertanyaanPageState();
 }
 
 class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
+  final ForumService _forumService = ForumService();
+  late Qna _question;
+  List<Komentar> _comments = [];
+  bool _isLoading = true;
   bool _liked = false;
-  final List<Map<String, String>> comments = [
-    {
-      'name': 'Arnold',
-      'comment': 'Mungkin bisa dengan makan dengan gizi yang cukup si',
-      'date': '23/09/2024',
-    },
-    {
-      'name': 'Ade Rai',
-      'comment': 'Bisa dengan meminum whey protein',
-      'date': '23/09/2024',
-    },
-    {
-      'name': 'John Cena',
-      'comment': 'Gizi cukup sama olahraga si, soalnya kalo dari pengalamanku itu berhasil',
-      'date': '23/09/2024',
-    },
-    {
-      'name': 'Adi',
-      'comment': 'Bisa dengan makan terus jangan lupa ngegym',
-      'date': '23/09/2024',
-    },
-    {
-      'name': 'Young Lex',
-      'comment': 'Makan aja si yang banyak kalo aku ya bang, makanbang',
-      'date': '23/09/2024',
-    },
-  ];
+  final TextEditingController _commentController = TextEditingController();
 
-  bool _isReplying = false;
-  String _replyText = "";
-
-  void toggleLike() {
-    setState(() {
-      _liked = !_liked;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchQuestionDetails();
   }
 
-  void toggleReplyBox() {
-    setState(() {
-      _isReplying = !_isReplying;
-    });
+  Future<void> _fetchQuestionDetails() async {
+    try {
+      final questionData = await _forumService.getQuestion(widget.questionId);
+      setState(() {
+        _question = Qna.fromJson(questionData);
+        _comments = (questionData['comments'] as List)
+            .map((comment) => Komentar.fromJson(comment))
+            .toList();
+        _liked = questionData['is_liked'] ?? false;
+        _isLoading = false;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load question: $e')),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _toggleLike() async {
+    try {
+      final isLiked = await _forumService.toggleLike(widget.questionId);
+      setState(() {
+        _liked = isLiked;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to toggle like: $e')),
+      );
+    }
+  }
+
+  Future<void> _addComment() async {
+    if (_commentController.text.isEmpty) return;
+
+    try {
+      final comment = await _forumService.addComment(
+        widget.questionId, 
+        _commentController.text
+      );
+      
+      setState(() {
+        _comments.add(comment);
+        _commentController.clear();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add comment: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white, // Background putih untuk tampilan bersih
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+            );
           },
         ),
         title: Text(
@@ -94,7 +135,7 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Kotak pertanyaan utama
+            // Main Question Section
             Material(
               elevation: 1,
               borderRadius: BorderRadius.circular(12.0),
@@ -116,7 +157,7 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Menambah Berat Badan',
+                      _question.judulQna ?? 'No Title',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -125,7 +166,7 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Barangkali di sini ada yang sudah berhasil meningkatkan berat badan, boleh tahu tipsnya?',
+                      _question.isiQna ?? 'No Content',
                       style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
                     SizedBox(height: 12),
@@ -136,46 +177,28 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                             _liked ? FluentIcons.thumb_like_20_filled : FluentIcons.thumb_like_20_regular,
                             size: 16,
                           ),
-                          onPressed: toggleLike,
+                          onPressed: _toggleLike,
                         ),
                         SizedBox(width: 4),
-                        Text(_liked ? '3' : '2'), // Jumlah suka diperbarui
+                        Text(_liked ? '1' : '0'), // Update logic for total likes
                         SizedBox(width: 16),
                         Icon(FluentIcons.chat_multiple_20_filled, size: 16),
                         SizedBox(width: 4),
-                        Text('9'),
-                        SizedBox(width: 8), // Jarak kecil sebelum tanggal
-                        Text(
-                          '23/09/2024',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                          onTap: toggleReplyBox,
-                          child: Text(
-                            'Balas',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        Text('${_comments.length}'),
                       ],
                     ),
-
                   ],
                 ),
               ),
             ),
             SizedBox(height: 16),
 
-            // Daftar komentar
+            // Comments List
             Expanded(
               child: ListView.builder(
-                itemCount: comments.length,
+                itemCount: _comments.length,
                 itemBuilder: (context, index) {
-                  var comment = comments[index];
+                  var comment = _comments[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Material(
@@ -199,7 +222,7 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              comment['name']!,
+                              comment.userUuid ?? 'Anonymous',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -208,16 +231,11 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              comment['comment']!,
+                              comment.isiKomentar ?? '',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black54,
                               ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              comment['date']!,
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -228,43 +246,28 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
               ),
             ),
 
-            // Kotak teks balasan
-            if (_isReplying)
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      onChanged: (value) {
-                        _replyText = value;
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Tulis balasan...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12),
+            // Comment Input Section
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: "Tulis balasan...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {
-                      if (_replyText.isNotEmpty) {
-                        setState(() {
-                          comments.add({
-                            'name': 'Anda',
-                            'comment': _replyText,
-                            'date': '04/12/2024',
-                          });
-                          _replyText = "";
-                          _isReplying = false;
-                        });
-                      }
-                    },
-                    icon: Icon(Icons.send, color: Colors.green),
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(width: 8),
+                IconButton(
+                  onPressed: _addComment,
+                  icon: Icon(Icons.send, color: Colors.green),
+                ),
+              ],
+            ),
           ],
         ),
       ),

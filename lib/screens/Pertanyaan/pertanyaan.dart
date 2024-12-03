@@ -6,6 +6,7 @@ import 'tambahpertanyaan.dart';
 import 'isipertanyaan.dart';
 import 'package:kaloriku/service/forumService.dart';
 import 'package:kaloriku/model/qna.dart';
+import 'package:kaloriku/model/like.dart'; // Added Like model import
 
 void main() {
   runApp(const PertanyaanScreen());

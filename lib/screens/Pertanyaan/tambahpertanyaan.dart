@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart'; 
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import '../Home/home_menu.dart';
 import '../profil/profil.dart';
-import 'pertanyaan.dart'; // Pastikan file ini ada dan berisi class PertanyaanScreen
+import 'pertanyaan.dart';
+import 'package:kaloriku/service/forumService.dart';
+import 'package:kaloriku/model/qna.dart';// Import Qna model
 
 void main() {
   runApp(const BuatPertanyaanScreen());
@@ -30,7 +32,11 @@ class BuatPertanyaanPage extends StatefulWidget {
 }
 
 class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
-  int _selectedIndex = 1; // Default halaman Pertanyaan
+  int _selectedIndex = 1;
+  final ForumService _forumService = ForumService(); 
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _deskripsiController = TextEditingController();
+  bool _isLoading = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,6 +59,44 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
         MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
+  }
+
+  Future<void> _postPertanyaan() async {
+    if (_judulController.text.isEmpty || _deskripsiController.text.isEmpty) {
+      _showSnackBar('Judul dan deskripsi tidak boleh kosong');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      Qna newQuestion = await _forumService.createQuestion(
+        _judulController.text, 
+        _deskripsiController.text
+      );
+      
+      _showSnackBar('Pertanyaan berhasil dibuat');
+      
+      // Navigate back to Pertanyaan screen or clear fields
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+      );
+    } catch (e) {
+      _showSnackBar('Gagal membuat pertanyaan: ${e.toString()}');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -107,6 +151,7 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
                     ),
                   ),
                   TextField(
+                    controller: _judulController,
                     decoration: InputDecoration(
                       hintText: 'Masukkan judul pertanyaan...',
                       border: InputBorder.none,
@@ -115,7 +160,7 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
                 ],
               ),
             ),
-            SizedBox(height: 16), // Jarak vertikal
+            SizedBox(height: 16),
             // Container untuk Deskripsi
             Container(
               padding: EdgeInsets.all(16.0),
@@ -142,6 +187,7 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
                     ),
                   ),
                   TextField(
+                    controller: _deskripsiController,
                     maxLines: 5,
                     decoration: InputDecoration(
                       hintText: 'Jelaskan detail pertanyaan Anda...',
@@ -151,15 +197,22 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
                 ],
               ),
             ),
-            SizedBox(height: 16), // Jarak vertikal
+            SizedBox(height: 16),
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  // Logika untuk posting pertanyaan
-                },
+                onPressed: _isLoading ? null : _postPertanyaan,
                 label: Text('Post'),
-                icon: Icon(Icons.send, color: Colors.white),
+                icon: _isLoading 
+                  ? SizedBox(
+                      width: 20, 
+                      height: 20, 
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2, 
+                        color: Colors.white
+                      )
+                    ) 
+                  : Icon(Icons.send, color: Colors.white),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -202,5 +255,13 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
         backgroundColor: Colors.white,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers
+    _judulController.dispose();
+    _deskripsiController.dispose();
+    super.dispose();
   }
 }
