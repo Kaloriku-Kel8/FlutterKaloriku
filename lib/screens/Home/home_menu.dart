@@ -3,6 +3,13 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:intl/intl.dart';
 
 // Import halaman lain
+import 'package:kaloriku/screens/ui_makanan/ui_sarapan.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_makanMalam.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_makanSiang.dart';
+import 'package:kaloriku/screens/ui_makanan/ui_cemilan.dart';
+
+
+
 import 'latihan.dart';
 import 'riwayat.dart';
 import 'saran_menu.dart';
@@ -162,14 +169,52 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
             _buildFeatureRow(),
             const SizedBox(height: 20),
-            _buildMealCard('Sarapan', '391 / 635 Cal',
-                Image.asset('assets/images/home/breakfast.png')),
-            _buildMealCard('Makan Siang', '856 / 847 Cal',
-                Image.asset('assets/images/home/lunch.png')),
-            _buildMealCard('Makan Malam', '379 / 529 Cal',
-                Image.asset('assets/images/home/dinner.png')),
-            _buildMealCard('Camilan', '159 / 200 Cal',
-                Image.asset('assets/images/home/snack.png')),
+// Inside the build method:
+_buildMealCard(
+  'Sarapan',
+  '391 / 635 Cal',
+  Image.asset('assets/images/home/breakfast.png'),
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>  Sarapan()),
+    );
+  },
+),
+_buildMealCard(
+  'Makan Siang',
+  '856 / 847 Cal',
+  Image.asset('assets/images/home/lunch.png'),
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>  MakanSiang()),
+    );
+  },
+),
+_buildMealCard(
+  'Makan Malam',
+  '379 / 529 Cal',
+  Image.asset('assets/images/home/dinner.png'),
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>  MakanMalam()),
+    );
+  },
+),
+_buildMealCard(
+  'Camilan',
+  '159 / 200 Cal',
+  Image.asset('assets/images/home/snack.png'),
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>  Cemilan()),
+    );
+  },
+),
+
           ],
         ),
       ),
@@ -336,10 +381,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMealCard(String title, String calories, dynamic icon) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: const Color.fromRGBO(227, 253, 222, 1.0),
+Widget _buildMealCard(String title, String calories, dynamic icon, VoidCallback onTap) {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    color: const Color.fromRGBO(227, 253, 222, 1.0),
+    child: GestureDetector(
+      onTap: onTap, // Memanggil onTap ketika card ditekan
       child: ListTile(
         leading: icon is Image
             ? icon // Jika `icon` adalah Image, gunakan langsung.
@@ -349,10 +396,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     .black), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
         title: Text(title, style: const TextStyle(fontSize: 19)),
         subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
-        trailing: const Icon(FluentIcons.add_square_48_filled,
-            size: 50, color: Colors.green),
+        trailing: const Icon(FluentIcons.add_square_48_filled, 
+        size: 50, color: Colors.green),
       ),
+    ),
     );
+  
   }
 }
 

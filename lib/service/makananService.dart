@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kaloriku/model/Makanan.dart';
+import 'package:kaloriku/model/makanan.dart';
 import 'package:kaloriku/service/tokenService.dart';
 import 'package:kaloriku/util/config/config.dart';
 
