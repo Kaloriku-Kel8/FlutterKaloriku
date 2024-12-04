@@ -7,8 +7,7 @@ import 'package:kaloriku/screens/ui_makanan/ui_sarapan.dart';
 import 'package:kaloriku/screens/ui_makanan/ui_makanMalam.dart';
 import 'package:kaloriku/screens/ui_makanan/ui_makanSiang.dart';
 import 'package:kaloriku/screens/ui_makanan/ui_cemilan.dart';
-
-
+import '../Pertanyaan/pertanyaan.dart';
 
 import 'latihan.dart';
 import 'riwayat.dart';
@@ -106,8 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
@@ -170,51 +170,50 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildFeatureRow(),
             const SizedBox(height: 20),
 // Inside the build method:
-_buildMealCard(
-  'Sarapan',
-  '391 / 635 Cal',
-  Image.asset('assets/images/home/breakfast.png'),
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  Sarapan()),
-    );
-  },
-),
-_buildMealCard(
-  'Makan Siang',
-  '856 / 847 Cal',
-  Image.asset('assets/images/home/lunch.png'),
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  MakanSiang()),
-    );
-  },
-),
-_buildMealCard(
-  'Makan Malam',
-  '379 / 529 Cal',
-  Image.asset('assets/images/home/dinner.png'),
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  MakanMalam()),
-    );
-  },
-),
-_buildMealCard(
-  'Camilan',
-  '159 / 200 Cal',
-  Image.asset('assets/images/home/snack.png'),
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  Cemilan()),
-    );
-  },
-),
-
+            _buildMealCard(
+              'Sarapan',
+              '391 / 635 Cal',
+              Image.asset('assets/images/home/breakfast.png'),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Sarapan()),
+                );
+              },
+            ),
+            _buildMealCard(
+              'Makan Siang',
+              '856 / 847 Cal',
+              Image.asset('assets/images/home/lunch.png'),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MakanSiang()),
+                );
+              },
+            ),
+            _buildMealCard(
+              'Makan Malam',
+              '379 / 529 Cal',
+              Image.asset('assets/images/home/dinner.png'),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MakanMalam()),
+                );
+              },
+            ),
+            _buildMealCard(
+              'Camilan',
+              '159 / 200 Cal',
+              Image.asset('assets/images/home/snack.png'),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Cemilan()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -222,72 +221,72 @@ _buildMealCard(
   }
 
   Widget _buildSummaryCard() {
-  return Material(
-    elevation: 2,
-    borderRadius: BorderRadius.circular(12),
-    color: const Color.fromRGBO(227, 253, 222, 1.0),
-    child: Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildSummaryColumn('${totalCalorie.toInt()} Cal', 'Asupan Harian'),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AsupanHarianScreen(),
+    return Material(
+      elevation: 2,
+      borderRadius: BorderRadius.circular(12),
+      color: const Color.fromRGBO(227, 253, 222, 1.0),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildSummaryColumn('${totalCalorie.toInt()} Cal', 'Asupan Harian'),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AsupanHarianScreen(),
+                  ),
+                );
+              },
+              child: SizedBox(
+                width: 150,
+                height: 150,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CustomCircularProgressIndicator(
+                      progress: progressValue,
+                      strokeWidth: 15,
+                      backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
+                      valueColor:
+                          circleColor, // Menyesuaikan dengan warna dinamis
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${remainingCalorie.toInt()} Cal',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                circleColor, // Mengubah warna berdasarkan status
+                          ),
+                        ),
+                        Text(
+                          status,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color:
+                                circleColor, // Mengubah warna berdasarkan status
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-            child: SizedBox(
-              width: 150,
-              height: 150,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  CustomCircularProgressIndicator(
-                    progress: progressValue,
-                    strokeWidth: 15,
-                    backgroundColor: const Color.fromRGBO(85, 85, 85, 1.0),
-                    valueColor: circleColor, // Menyesuaikan dengan warna dinamis
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${remainingCalorie.toInt()} Cal',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              circleColor, // Mengubah warna berdasarkan status
-                        ),
-                      ),
-                      Text(
-                        status,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color:
-                              circleColor, // Mengubah warna berdasarkan status
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ),
-          ),
-          _buildSummaryColumn('${consumedCalorie.toInt()} Cal', 'Terpenuhi'),
-        ],
+            _buildSummaryColumn('${consumedCalorie.toInt()} Cal', 'Terpenuhi'),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildSummaryColumn(String value, String label) {
     return Column(
@@ -381,27 +380,27 @@ _buildMealCard(
     );
   }
 
-Widget _buildMealCard(String title, String calories, dynamic icon, VoidCallback onTap) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    color: const Color.fromRGBO(227, 253, 222, 1.0),
-    child: GestureDetector(
-      onTap: onTap, // Memanggil onTap ketika card ditekan
-      child: ListTile(
-        leading: icon is Image
-            ? icon // Jika `icon` adalah Image, gunakan langsung.
-            : Icon(icon,
-                size: 40,
-                color: Colors
-                    .black), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
-        title: Text(title, style: const TextStyle(fontSize: 19)),
-        subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
-        trailing: const Icon(FluentIcons.add_square_48_filled, 
-        size: 50, color: Colors.green),
+  Widget _buildMealCard(
+      String title, String calories, dynamic icon, VoidCallback onTap) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: const Color.fromRGBO(227, 253, 222, 1.0),
+      child: GestureDetector(
+        onTap: onTap, // Memanggil onTap ketika card ditekan
+        child: ListTile(
+          leading: icon is Image
+              ? icon // Jika `icon` adalah Image, gunakan langsung.
+              : Icon(icon,
+                  size: 40,
+                  color: Colors
+                      .black), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
+          title: Text(title, style: const TextStyle(fontSize: 19)),
+          subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
+          trailing: const Icon(FluentIcons.add_square_48_filled,
+              size: 50, color: Colors.green),
+        ),
       ),
-    ),
     );
-  
   }
 }
 

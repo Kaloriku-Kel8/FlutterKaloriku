@@ -127,7 +127,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
         } else {
           filteredAddedMenu.add(selectedMakananItem!);
         }
-
+        
         selectedMakananItem = null;
       });
     }
