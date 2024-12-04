@@ -3,10 +3,10 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
 
 void main() {
-  runApp(MyApp());
+  runApp(Cemilan());
 }
 
-class MyApp extends StatelessWidget {
+class Cemilan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,24 +1,27 @@
-
 class Komentar {
   int? idKomentar;
   String? idQna;
   String? userUuid;
+  String? userCommentName;
   String? isiKomentar;
 
-  Komentar({
-    this.idKomentar,
-    this.idQna,
-    this.userUuid,
-    this.isiKomentar,
-  });
+  Komentar(
+      {this.idKomentar,
+      this.idQna,
+      this.userUuid,
+      this.userCommentName,
+      this.isiKomentar});
 
   // Factory method untuk membuat instance dari JSON
   factory Komentar.fromJson(Map<String, dynamic> json) {
     return Komentar(
-      idKomentar: json['id_komentar'] != null ? int.tryParse(json['id_komentar'].toString()) : null,
+      idKomentar: json['id_komentar'] != null
+          ? int.tryParse(json['id_komentar'].toString())
+          : null,
       idQna: json['id_qna'],
       userUuid: json['user_uuid'],
       isiKomentar: json['isi_komentar'],
+      userCommentName: json['user_name'],
     );
   }
 
