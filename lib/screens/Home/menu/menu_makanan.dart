@@ -4,61 +4,91 @@ import '../home_menu.dart';
 import '../saran_menu.dart';
 import 'tambah_menu.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
-
-void main() {
-  runApp(MenuMakananScreen());
-}
-
-class MenuMakananScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const FoodDetailScreen(),
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-        textTheme: ThemeData.light().textTheme.apply(
-              fontFamily: 'Roboto',
-            ),
-      ),
-      routes: {
-        '/home': (context) => const HomeMenuScreen(),
-        '/saran': (context) => const SaranMenuScreen(),
-        '/tambah': (context) => const TambahMenuScreen(), // Tambahkan rute ini
-      },
-    );
-  }
-}
+import 'package:kaloriku/model/resepMakanan.dart';
+import 'package:kaloriku/service/resepMakananService.dart';
 
 class FoodDetailScreen extends StatefulWidget {
-  const FoodDetailScreen({Key? key}) : super(key: key);
+  final int? resepId;
+
+  const FoodDetailScreen({Key? key, this.resepId}) : super(key: key);
 
   @override
   _FoodDetailScreenState createState() => _FoodDetailScreenState();
+
+  // Static method to navigate to detail screen
+  static void navigateToDetail(BuildContext context, int resepId) {
+    Navigator.pushNamed(context, '/detail', arguments: {'resepId': resepId});
+  }
 }
 
 class _FoodDetailScreenState extends State<FoodDetailScreen> {
   int _selectedIndex = 0;
+  ResepMakanan? _resep;
+  bool _isLoading = true;
+  String? _errorMessage;
+  int? idResep; // Declare resepId here for state usage
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+    if (args.containsKey('resepId')) {
+      idResep = args['resepId'];
+      _fetchResepDetails();
+    } else {
+      setState(() {
+        _errorMessage = 'ID Resep tidak ditemukan';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchResepDetails() async {
+    try {
+      final resep = await ResepMakananService().getResepMakananById(idResep!);
+      setState(() {
+        _resep = resep;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    if (_selectedIndex == 0) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
-      );
-    } else if (_selectedIndex == 1) {
-      // Dummy navigation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
-      );
-    } else if (_selectedIndex == 2) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ProfilScreen()),
-      );
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeMenuScreen()),
+        );
+        break;
+      case 1:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProfilScreen()),
+        );
+        break;
     }
   }
 
@@ -74,6 +104,35 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Error: $_errorMessage'),
+              ElevatedButton(
+                onPressed: _fetchResepDetails,
+                child: Text('Coba Lagi'),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_resep == null) {
+      return Scaffold(
+        body: Center(child: Text('Resep tidak ditemukan')),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -87,10 +146,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 IconButton(
                   icon: Icon(FluentIcons.arrow_left_12_regular),
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SaranMenuScreen()),
-                    );
+                    Navigator.pop(context);
                   },
                 ),
                 const SizedBox(width: 16),
@@ -134,40 +190,74 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/images/home/sate.png',
-                fit: BoxFit.cover,
-                height: 200,
-                width: double.infinity,
-              ),
+              child: _resep?.gambar != null
+                  ? Image.network(
+                      _resep!.gambar!,
+                      fit: BoxFit.cover,
+                      height: 200,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 200,
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      height: 200,
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: Text('Gambar tidak tersedia'),
+                      ),
+                    ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Sate ayam dengan saus kacang, nasi, dan irisan timun.',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              _resep?.namaResep ?? 'Nama Resep Tidak Tersedia',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                Text('789 Cal', style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal)),
+              children: [
+                Text(
+                  '${_resep?.kaloriMakanan?.toStringAsFixed(0) ?? '0'} Cal',
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.normal),
+                ),
               ],
             ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                Text('Resepnya aaaa', style: TextStyle(fontSize: 16)),
+              children: [
+                Expanded(
+                  child: Text(
+                    _resep?.deskripsi ?? 'Deskripsi tidak tersedia',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
               ],
             ),
+            const SizedBox(height: 16),
             const Spacer(),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigasi ke TambahMenuScreen
-                  Navigator.pushNamed(context, '/tambah');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TambahMenuScreen(resep: _resep),
+                    ),
+                  );
                 },
-                child: const Text('Tambah'),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.green,
@@ -177,6 +267,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
+                child: const Text('Tambah'),
               ),
             ),
           ],
