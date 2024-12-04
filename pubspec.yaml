@@ -131,7 +131,35 @@ flutter:
     - assets/images/home/calfraises.png
     - assets/images/home/sidelunge.png
     - assets/nasigoreng.jpeg
-
+    - assets/resep/cassavaflour.jpeg
+    - assets/resep/sandwichtelur.jpg
+    - assets/resep/oatmealgoreng.jpg
+    - assets/resep/bakmigoreng.jpg
+    - assets/resep/dadaayamsuwir.jpg
+    - assets/resep/ayamrica.jpg
+    - assets/resep/ayamteriyaki.jpg
+    - assets/resep/bakedchicken.jpg
+    - assets/resep/shawarma.jpg
+    - assets/resep/chickensweet.jpg
+    - assets/resep/bulgogi.jpg
+    - assets/resep/kwetiawayam.jpg
+    - assets/resep/ayamkuning.jpg
+    - assets/resep/ayamkecap.jpg
+    - assets/resep/ayammentegea.jpg
+    - assets/resep/sateayamjamur.jpg
+    - assets/resep/nasigorengmerah.jpg
+    - assets/resep/kangkungtumis.jpg
+    - assets/resep/nasiboong.jpg
+    - assets/resep/gepreklowcalori.jpg
+    - assets/resep/tumisbrokolijamur.jpg
+    - assets/resep/semurtahu.jpg
+    - assets/resep/rebusantahu.jpg
+    - assets/resep/telursutera.jpg
+    - assets/resep/dimsum.jpg
+    - assets/resep/tumisbrokoli.jpg
+    - assets/resep/bayamjamur.jpg
+    - assets/resep/acartimun.jpg
+    - assets/resep/tumiskubis.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
