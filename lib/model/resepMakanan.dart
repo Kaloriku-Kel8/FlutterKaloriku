@@ -21,29 +21,30 @@
       this.kategoriResep,
     });
 
-    // Factory method to create an instance from JSON
-    factory ResepMakanan.fromJson(Map<String, dynamic> json) {
-      return ResepMakanan(
-        idResep: json['id_resep'] != null
-            ? int.tryParse(json['id_resep'].toString())
-            : null,
-        namaResep: json['nama_resep'],
-        deskripsi: json['deskripsi'],
-        gambar: json['gambar'],
-        kaloriMakanan: json['kalori_makanan'] != null
-            ? double.tryParse(json['kalori_makanan'].toString())
-            : null,
-        beratMakanan: json['berat_makanan'] != null
-            ? double.tryParse(json['berat_makanan'].toString())
-            : null,
-        kategoriResep: json['kategori_resep'] != null
-            ? KategoriResep.values.firstWhere(
-                (e) => e.toString().split('.').last == json['kategori_resep'],
-                orElse: () => KategoriResep.sarapan,
-              )
-            : null,
-      );
-    }
+  // Factory method to create an instance from JSON
+  factory ResepMakanan.fromJson(Map<String, dynamic> json) {
+    return ResepMakanan(
+      idResep: json['id_resep'] != null
+          ? int.tryParse(json['id_resep'].toString())
+          : null,
+      namaResep: json['nama_resep'],
+      deskripsi: json['deskripsi'],
+      resep: json['resep'],
+      gambar: json['gambar'],
+      kaloriMakanan: json['kalori_makanan'] != null
+          ? double.tryParse(json['kalori_makanan'].toString())
+          : null,
+      beratMakanan: json['berat_makanan'] != null
+          ? double.tryParse(json['berat_makanan'].toString())
+          : null,
+      kategoriResep: json['kategori_resep'] != null
+          ? KategoriResep.values.firstWhere(
+              (e) => e.toString().split('.').last == json['kategori_resep'],
+              orElse: () => KategoriResep.sarapan,
+            )
+          : null,
+    );
+  }
 
     // Method to convert instance back to JSON
     Map<String, dynamic> toJson() {

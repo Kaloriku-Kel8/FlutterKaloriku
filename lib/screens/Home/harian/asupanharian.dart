@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import '../home_menu.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
 import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
@@ -94,23 +95,24 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         if (remainingCalorie > 0) {
           circleColor = Colors.green;
           status = 'Tersisa';
-          info = 'Kalori Masih Kurang Sebanyak :';
+          info = 'Kalori Masih Kurang';
         } else if (remainingCalorie < 0) {
           circleColor = Colors.red;
-          status = 'Melebihi Target Sebanyak : ';
-          info = 'Kalori Melebihi Target'; // Status jika kalori lebih
-          remainingCalorie = remainingCalorie
-              .abs(); // Menampilkan nilai positif jika melebihi target
+          status = 'Melebihi Target';
+          info = 'Kalori Melebihi Target';
+          remainingCalorie = remainingCalorie.abs();
         } else {
           circleColor = Colors.blue;
-          status = 'Memenuhi Target Kalori';
-          info = 'Kalori Terpenuhi'; // Status jika kalori sesuai dengan target
+          status = 'Target Tercapai';
+          info = 'Kalori Terpenuhi';
         }
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat data: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memuat data: $e')),
+        );
+      }
     }
   }
 
@@ -129,14 +131,15 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         final List<dynamic> konsumsiList = response['konsumsi'] ?? [];
         filteredMeals =
             konsumsiList.map((meal) => KonsumsiKalori.fromJson(meal)).toList();
-
         categoryTotalCalories =
             double.tryParse(response['total_kalori']?.toString() ?? '0') ?? 0;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat data kategori: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memuat data kategori: $e')),
+        );
+      }
     }
   }
 
@@ -160,6 +163,114 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
+  }
+
+  Widget _buildCalorieStatus() {
+    final progressValue = totalCalorie > 0
+        ? (consumedCalorie / totalCalorie).clamp(0.0, 1.0)
+        : 0.0;
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      color: Colors.green.shade50,
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Target Calorie Section
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${totalCalorie.toInt()} Cal',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Target Harian',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 50, 47, 47),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Progress Indicator Section
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularPercentIndicator(
+                    radius: 60.0,
+                    lineWidth: 15.0,
+                    animation: true,
+                    animationDuration: 1000,
+                    percent: progressValue,
+                    center: Text(
+                      '${consumedCalorie.toInt()} Cal',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: circleColor,
+                    backgroundColor: const Color(0xFFE5E5E5),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    info,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: circleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Status Section
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    status,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: circleColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${remainingCalorie.toInt()} Cal',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: circleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildFoodCategorySection(BuildContext context) {
@@ -258,77 +369,6 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildCalorieStatus() {
-    return Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(12),
-      color: const Color.fromRGBO(227, 253, 222, 1.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      '${totalCalorie.toInt()} Cal',
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const Text('Target Harian', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      size: 30,
-                      color: circleColor,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      info,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: circleColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      status,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: circleColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${remainingCalorie.toInt()}',
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: totalCalorie > 0 ? consumedCalorie / totalCalorie : 0,
-              backgroundColor: Colors.grey[300],
-              color: circleColor,
-              minHeight: 8,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
