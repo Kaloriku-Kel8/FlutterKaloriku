@@ -17,7 +17,7 @@ class Makanan {
     this.kaloriMakanan,
     this.beratMakanan,
     this.kategoriMakanan,
-    this.quantity = 0, // Default quantity 0
+    this.quantity=0 , // Default quantity 0
   });
 
   // Factory method to create an instance from JSON
