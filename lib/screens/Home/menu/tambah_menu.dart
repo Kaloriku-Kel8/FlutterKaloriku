@@ -5,6 +5,7 @@ import 'package:kaloriku/model/resepMakanan.dart';
 import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 import 'menu_makanan.dart';
 import '../home_menu.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
 
 class TambahMenuScreen extends StatefulWidget {
@@ -32,9 +33,9 @@ class _TambahMenuScreenState extends State<TambahMenuScreen> {
         );
         break;
       case 1:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PertanyaanScreen()),
         );
         break;
       case 2:

@@ -4,6 +4,7 @@ import 'home_menu.dart';
 import '../profil/profil.dart';
 import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
 void main() {
   runApp(const Riwayat());
@@ -50,8 +51,9 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
         MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(

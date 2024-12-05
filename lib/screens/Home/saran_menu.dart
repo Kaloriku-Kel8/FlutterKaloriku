@@ -5,6 +5,7 @@ import 'package:kaloriku/model/resepMakanan.dart';
 import 'package:kaloriku/screens/Home/menu/menu_makanan.dart';
 import 'home_menu.dart';
 import '../profil/profil.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
 void main() {
   runApp(const SaranMenuScreen());
@@ -142,8 +143,9 @@ class _MenuSuggestionScreenState extends State<MenuSuggestionScreen> {
         MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
