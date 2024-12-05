@@ -248,6 +248,18 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               ],
             ),
             const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    _resep?.resep ?? 'Resep tidak tersedia',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             const Spacer(),
             Center(
               child: ElevatedButton(

@@ -29,6 +29,7 @@ class ResepMakanan {
           : null,
       namaResep: json['nama_resep'],
       deskripsi: json['deskripsi'],
+      resep: json['resep'],
       gambar: json['gambar'],
       kaloriMakanan: json['kalori_makanan'] != null
           ? double.tryParse(json['kalori_makanan'].toString())
