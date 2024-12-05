@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
+
 import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
 import 'package:kaloriku/screens/Home/home_menu.dart';
@@ -172,7 +173,7 @@ void _onItemTapped(int index) {
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
     filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     fetchMakananData();  // Mengambil data dari API saat awal
   }
 
@@ -317,12 +318,13 @@ void removeFoodQuantity(Makanan item) {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               children: [
-                  IconButton(
+               /*    IconButton(
                   icon: Icon(FluentIcons.arrow_left_12_regular),
                   onPressed: () {
                     Navigator.pop(context); // Cukup gunakan pop saja
                   },
-                ),
+                ), */
+
                 const SizedBox(width: 16),
                 Text(
                   'Sarapan',
@@ -420,7 +422,7 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
                 controller: _tabController,
                 children: [
                 buildFoodList(filteredMakananList, isAddedMenu: false),
-                buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
+           //     buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
                 buildFoodList(filteredAddedMenu, isAddedMenu: true),
             
                 ],
