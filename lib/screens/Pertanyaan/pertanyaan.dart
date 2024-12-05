@@ -88,7 +88,9 @@ class _ForumPageState extends State<ForumPage> {
                   })
               .toList();
         });
-
+      }
+    } catch (e) {
+      if (mounted) {
         if (forumItems.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -98,12 +100,6 @@ class _ForumPageState extends State<ForumPage> {
             ),
           );
         }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengambil data: $e')),
-        );
       }
     }
   }
