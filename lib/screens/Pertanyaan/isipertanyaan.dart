@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/service/forumService.dart';
 import 'package:kaloriku/model/qna.dart';
+import 'package:kaloriku/model/like.dart';
 import 'package:kaloriku/model/komentar.dart';
+import 'dart:convert'; // This is the library for JSON decoding
 import 'pertanyaan.dart';
 
 void main() {
   runApp(IsiPertanyaanScreen());
 }
 
-
 class IsiPertanyaanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: IsiPertanyaanPage(questionId: ''),
+      home: IsiPertanyaanPage(questionId: '123'), // Example questionId
       theme: ThemeData(
         fontFamily: 'Roboto',
         textTheme: ThemeData.light().textTheme.apply(
@@ -29,7 +30,8 @@ class IsiPertanyaanScreen extends StatelessWidget {
 class IsiPertanyaanPage extends StatefulWidget {
   final String questionId;
 
-  const IsiPertanyaanPage({Key? key, required this.questionId}) : super(key: key);
+  const IsiPertanyaanPage({Key? key, required this.questionId})
+      : super(key: key);
 
   @override
   _IsiPertanyaanPageState createState() => _IsiPertanyaanPageState();
@@ -37,11 +39,12 @@ class IsiPertanyaanPage extends StatefulWidget {
 
 class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
   final ForumService _forumService = ForumService();
-  late Qna _question;
-  List<Komentar> _comments = [];
+  Qna? _question;
   bool _isLoading = true;
   bool _liked = false;
   final TextEditingController _commentController = TextEditingController();
+  final String _currentUserUuid =
+      'currentUserUuid'; // Replace with current user UUID
 
   @override
   void initState() {
@@ -52,12 +55,19 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
   Future<void> _fetchQuestionDetails() async {
     try {
       final questionData = await _forumService.getQuestion(widget.questionId);
+
+      Map<String, dynamic> decodedData;
+      if (questionData is String) {
+        decodedData = jsonDecode(questionData as String);
+      } else {
+        decodedData = questionData;
+      }
+
       setState(() {
-        _question = Qna.fromJson(questionData);
-        _comments = (questionData['comments'] as List)
-            .map((comment) => Komentar.fromJson(comment))
-            .toList();
-        _liked = questionData['is_liked'] ?? false;
+        _question = Qna.fromJson(decodedData);
+        _liked = _question?.likes
+                ?.any((like) => like.userUuid == _currentUserUuid) ??
+            false;
         _isLoading = false;
       });
     } catch (e) {
@@ -70,36 +80,71 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
     }
   }
 
-  Future<void> _toggleLike() async {
+  Future<void> _addComment() async {
+    if (_commentController.text.trim().isEmpty || _question == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Komentar tidak boleh kosong')));
+      return;
+    }
+
+    final newCommentText = _commentController.text.trim();
+    setState(() {
+      _question?.komentar?.add(
+          Komentar(userCommentName: 'Anonymous', isiKomentar: newCommentText));
+      _commentController.clear();
+    });
+
     try {
-      final isLiked = await _forumService.toggleLike(widget.questionId);
+      final newComment =
+          await _forumService.addComment(widget.questionId, newCommentText);
       setState(() {
-        _liked = isLiked;
+        _question?.komentar?.last = newComment;
       });
     } catch (e) {
+      setState(() {
+        _question?.komentar?.removeLast();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to toggle like: $e')),
-      );
+          SnackBar(content: Text('Gagal menambahkan komentar: $e')));
     }
   }
 
-  Future<void> _addComment() async {
-    if (_commentController.text.isEmpty) return;
+  Future<void> _toggleLike() async {
+    if (_question == null) return;
 
     try {
-      final comment = await _forumService.addComment(
-        widget.questionId, 
-        _commentController.text
-      );
-      
-      setState(() {
-        _comments.add(comment);
-        _commentController.clear();
-      });
+      final isLiked = await _forumService.toggleLike(widget.questionId);
+
+      if (mounted) {
+        setState(() {
+          _liked = isLiked;
+
+          if (_liked) {
+            _question?.likes?.add(
+                Like(userUuid: _currentUserUuid, idQna: widget.questionId));
+            _question?.likeCount =
+                (_question?.likeCount ?? 0) + 1; // Increment like count
+          } else {
+            _question?.likes
+                ?.removeWhere((like) => like.userUuid == _currentUserUuid);
+            _question?.likeCount =
+                (_question?.likeCount ?? 0) - 1; // Decrement like count
+          }
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add comment: $e')),
-      );
+      setState(() {
+        _liked = !_liked; // Revert the like state
+        if (_liked) {
+          _question?.likes
+              ?.add(Like(userUuid: _currentUserUuid, idQna: widget.questionId));
+        } else {
+          _question?.likes
+              ?.removeWhere((like) => like.userUuid == _currentUserUuid);
+        }
+      });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to toggle like: $e')));
     }
   }
 
@@ -111,6 +156,13 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
       );
     }
 
+    final question = _question;
+    if (question == null) {
+      return Scaffold(
+        body: Center(child: Text('No data available.')),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -119,72 +171,54 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PertanyaanScreen()),
-            );
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => PertanyaanScreen()));
           },
         ),
-        title: Text(
-          "Kembali",
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text("Kembali", style: TextStyle(color: Colors.black)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Main Question Section
             Material(
               elevation: 1,
               borderRadius: BorderRadius.circular(12.0),
               child: Container(
                 padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _question.judulQna ?? 'No Title',
+                      question.judulQna ?? 'No Title',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87),
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      _question.isiQna ?? 'No Content',
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
+                    Text(question.isiQna ?? 'No Content',
+                        style: TextStyle(fontSize: 14, color: Colors.black54)),
                     SizedBox(height: 12),
                     Row(
                       children: [
                         IconButton(
                           icon: Icon(
-                            _liked ? FluentIcons.thumb_like_20_filled : FluentIcons.thumb_like_20_regular,
+                            _liked
+                                ? FluentIcons.thumb_like_20_filled
+                                : FluentIcons.thumb_like_20_regular,
+                            color: _liked ? Colors.blue : Colors.black,
                             size: 16,
                           ),
                           onPressed: _toggleLike,
                         ),
                         SizedBox(width: 4),
-                        Text(_liked ? '1' : '0'), // Update logic for total likes
+                        Text('${question.likeCount}'),
                         SizedBox(width: 16),
                         Icon(FluentIcons.chat_multiple_20_filled, size: 16),
                         SizedBox(width: 4),
-                        Text('${_comments.length}'),
+                        Text('${question.komentarCount}'),
                       ],
                     ),
                   ],
@@ -192,13 +226,11 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Comments List
             Expanded(
               child: ListView.builder(
-                itemCount: _comments.length,
+                itemCount: _question?.komentar?.length ?? 0,
                 itemBuilder: (context, index) {
-                  var comment = _comments[index];
+                  final comment = _question!.komentar![index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Material(
@@ -206,36 +238,21 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                       borderRadius: BorderRadius.circular(8.0),
                       child: Container(
                         padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              comment.userUuid ?? 'Anonymous',
+                              comment.userCommentName ?? '',
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87),
                             ),
                             SizedBox(height: 4),
                             Text(
                               comment.isiKomentar ?? '',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
+                                  fontSize: 14, color: Colors.black54),
                             ),
                           ],
                         ),
@@ -245,8 +262,6 @@ class _IsiPertanyaanPageState extends State<IsiPertanyaanPage> {
                 },
               ),
             ),
-
-            // Comment Input Section
             Row(
               children: [
                 Expanded(

@@ -1,7 +1,7 @@
 class Like {
-  int? idLike;
-  String? idQna;
-  String? userUuid;
+  final int? idLike;
+  final String? idQna;
+  final String? userUuid;
 
   Like({
     this.idLike,
@@ -9,7 +9,6 @@ class Like {
     this.userUuid,
   });
 
-  // Factory method to create an instance from JSON
   factory Like.fromJson(Map<String, dynamic> json) {
     return Like(
       idLike: json['id_like'] != null
@@ -20,7 +19,6 @@ class Like {
     );
   }
 
-  // Method to convert the instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'id_like': idLike,

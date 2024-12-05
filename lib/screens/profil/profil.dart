@@ -5,6 +5,7 @@ import '../Home/home_menu.dart';
 import 'editprofil.dart';
 import 'package:kaloriku/service/userprofilservice.dart';
 import 'package:kaloriku/model/dataUser.dart';
+import '../Pertanyaan/pertanyaan.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({Key? key}) : super(key: key);
@@ -90,11 +91,9 @@ class _ProfilScreenState extends State<ProfilScreen>
         MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Halaman Pertanyaan belum tersedia"),
-          backgroundColor: Colors.orange,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(

@@ -3,10 +3,11 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:intl/intl.dart';
 import '../home_menu.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
-// Import necessary services and models
+// Updated imports
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
-import 'package:kaloriku/service/kaloriKonsumsiService.dart';
+import 'package:kaloriku/service/kaloriKOnsumsiService.dart';
 
 void main() {
   runApp(const AsupanHarianScreen());
@@ -38,9 +39,18 @@ class AsupanHarianHome extends StatefulWidget {
 class _AsupanHarianHomeState extends State<AsupanHarianHome> {
   int _selectedIndex = 0;
   String? _selectedCategory;
-  final KaloriKonsumsiService _kaloriKonsumsiService = KaloriKonsumsiService();
+  final KaloriKonsumsiService _kaloriService = KaloriKonsumsiService();
 
-  // Mapping between UI categories and backend enum
+  double totalCalorie = 0;
+  double consumedCalorie = 0;
+  double remainingCalorie = 0;
+  Color circleColor = Colors.blue;
+  String status = 'Tersisa';
+  String info = 'Kalori Masih Kurang';
+
+  List<KonsumsiKalori> filteredMeals = [];
+  double categoryTotalCalories = 0;
+
   final Map<String, WaktuMakan> _categoryMap = {
     'Sarapan': WaktuMakan.sarapan,
     'Makan Siang': WaktuMakan.makan_siang,
@@ -62,47 +72,87 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
     'Camilan': 'assets/images/home/snackblack.png',
   };
 
-  List<KonsumsiKalori> _todayMeals = [];
-  double _totalCalorie = 3138; // Default total daily calorie
-  double _consumedCalorie = 0;
-  double _remainingCalorie = 0;
-
   @override
   void initState() {
     super.initState();
-    _fetchTodayMeals();
+    _loadSummaryData();
   }
 
-  // Fetch today's meals from backend
-  Future<void> _fetchTodayMeals() async {
+  Future<void> _loadSummaryData() async {
     try {
-      final meals = await _kaloriKonsumsiService.getKonsumsiKaloriToday();
-      
+      final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final response = await _kaloriService.updateSummary(formattedDate);
+
       setState(() {
-        _todayMeals = meals;
-        _consumedCalorie = meals.fold(0, (sum, meal) => sum + (meal.kaloriKonsumsi ?? 0));
-        _remainingCalorie = _totalCalorie - _consumedCalorie;
+        totalCalorie =
+            double.tryParse(response['data']['target_kalori'].toString()) ?? 0;
+        consumedCalorie =
+            double.tryParse(response['data']['kalori_terpenuhi'].toString()) ??
+                0;
+        remainingCalorie = totalCalorie - consumedCalorie;
+
+        if (remainingCalorie > 0) {
+          circleColor = Colors.green;
+          status = 'Tersisa';
+          info = 'Kalori Masih Kurang Sebanyak :';
+        } else if (remainingCalorie < 0) {
+          circleColor = Colors.red;
+          status = 'Melebihi Target Sebanyak : ';
+          info = 'Kalori Melebihi Target'; // Status jika kalori lebih
+          remainingCalorie = remainingCalorie
+              .abs(); // Menampilkan nilai positif jika melebihi target
+        } else {
+          circleColor = Colors.blue;
+          status = 'Memenuhi Target Kalori';
+          info = 'Kalori Terpenuhi'; // Status jika kalori sesuai dengan target
+        }
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching meals: $e')),
+        SnackBar(content: Text('Gagal memuat data: $e')),
       );
     }
   }
 
-void _onItemTapped(int index) {
+  Future<void> _loadCategoryMeals(String category) async {
+    try {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final waktuMakan = _categoryMap[category];
+      if (waktuMakan == null) return;
+
+      final response = await _kaloriService.getKonsumsiByDayAndCategory(
+        formattedDate,
+        waktuMakan.toString().split('.').last,
+      );
+
+      setState(() {
+        final List<dynamic> konsumsiList = response['konsumsi'] ?? [];
+        filteredMeals =
+            konsumsiList.map((meal) => KonsumsiKalori.fromJson(meal)).toList();
+
+        categoryTotalCalories =
+            double.tryParse(response['total_kalori']?.toString() ?? '0') ?? 0;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data kategori: $e')),
+      );
+    }
+  }
+
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-
     if (index == 0) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
@@ -113,61 +163,168 @@ void _onItemTapped(int index) {
   }
 
   Widget _buildFoodCategorySection(BuildContext context) {
-    return Center(
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        children: _categoryMap.keys.map((category) {
-          final isSelected = _selectedCategory == category;
-          return _buildCategoryItem(
-            Image.asset(
-              isSelected ? _imagesBlack[category]! : _images[category]!,
-              height: 50,
-              width: 50,
+    return Column(
+      children: _categoryMap.keys.map((category) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedCategory = category;
+            });
+            _loadCategoryMeals(category);
+          },
+          child: Card(
+            color: _selectedCategory == category
+                ? Colors.green.withOpacity(0.3)
+                : Colors.white,
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            category,
-            () {
-              setState(() {
-                _selectedCategory = _selectedCategory == category ? null : category;
-              });
-            },
-            isSelected,
-          );
-        }).toList(),
-      ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              child: Row(
+                children: [
+                  Image.asset(
+                    _selectedCategory == category
+                        ? _imagesBlack[category]!
+                        : _images[category]!,
+                    width: 40,
+                    height: 40,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(category, style: const TextStyle(fontSize: 16)),
+                        if (_selectedCategory == category)
+                          Text(
+                            '${categoryTotalCalories.toInt()} Cal',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildCategoryItem(
-    Widget icon,
-    String title,
-    VoidCallback onTap,
-    bool isSelected,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 90,
-        width: 90,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: isSelected
-              ? const Color.fromRGBO(97, 202, 61, 1.0)
-              : const Color.fromRGBO(248, 248, 248, 1.0),
+  Widget _buildMealsList() {
+    if (filteredMeals.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text('Belum ada makanan yang ditambahkan'),
         ),
+      );
+    }
+
+    return Column(
+      children: filteredMeals.map((meal) {
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      meal.namaMakanan ?? 'Unnamed Meal',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${meal.beratKonsumsi?.toStringAsFixed(0) ?? '0'} gram',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${meal.kaloriKonsumsi?.toStringAsFixed(0) ?? '0'} Cal',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCalorieStatus() {
+    return Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(12),
+      color: const Color.fromRGBO(227, 253, 222, 1.0),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            icon,
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : Colors.black,
-              ),
-              textAlign: TextAlign.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      '${totalCalorie.toInt()} Cal',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const Text('Target Harian', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      size: 30,
+                      color: circleColor,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      info,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: circleColor,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      status,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: circleColor,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${remainingCalorie.toInt()}',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: totalCalorie > 0 ? consumedCalorie / totalCalorie : 0,
+              backgroundColor: Colors.grey[300],
+              color: circleColor,
+              minHeight: 8,
             ),
           ],
         ),
@@ -175,43 +332,33 @@ void _onItemTapped(int index) {
     );
   }
 
-  // Filter meals based on selected category
-  List<KonsumsiKalori> _getFilteredMeals() {
-    if (_selectedCategory == null) return _todayMeals;
-    
-    return _todayMeals.where((meal) {
-      final category = _categoryMap.keys.firstWhere(
-        (key) => _categoryMap[key] == meal.waktuMakan,
-        orElse: () => '',
-      );
-      return category == _selectedCategory;
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final filteredMeals = _getFilteredMeals();
-    final progressValue = _consumedCalorie / _totalCalorie;
-
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
             icon: Icon(
-              _selectedIndex == 0 ? FluentIcons.home_12_filled : FluentIcons.home_12_regular,
+              _selectedIndex == 0
+                  ? FluentIcons.home_12_filled
+                  : FluentIcons.home_12_regular,
             ),
             label: 'Beranda',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              _selectedIndex == 1 ? FluentIcons.chat_12_filled : FluentIcons.chat_12_regular,
+              _selectedIndex == 1
+                  ? FluentIcons.chat_12_filled
+                  : FluentIcons.chat_12_regular,
             ),
             label: 'Pertanyaan',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              _selectedIndex == 2 ? FluentIcons.person_12_filled : FluentIcons.person_12_regular,
+              _selectedIndex == 2
+                  ? FluentIcons.person_12_filled
+                  : FluentIcons.person_12_regular,
             ),
             label: 'Profil',
           ),
@@ -233,162 +380,14 @@ void _onItemTapped(int index) {
               style: TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 16),
-            Material(
-              elevation: 2,
-              borderRadius: BorderRadius.circular(12),
-              color: const Color.fromRGBO(227, 253, 222, 1.0),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          '${_totalCalorie.toInt()} Cal',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const Text('Asupan Harian', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 150,
-                      height: 150,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CustomCircularProgressIndicator(
-                            progress: progressValue,
-                            strokeWidth: 15,
-                            backgroundColor: Colors.grey,
-                            valueColor: Colors.blue,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${_remainingCalorie.toInt()} Cal',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const Text('Tersisa', style: TextStyle(fontSize: 10)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          '${_consumedCalorie.toInt()} Cal',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const Text('Terpenuhi', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildCalorieStatus(),
             const SizedBox(height: 20),
             _buildFoodCategorySection(context),
             const SizedBox(height: 20),
-            ...filteredMeals.map((meal) {
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(meal.namaMakanan ?? 'Unnamed Meal', 
-                        style: const TextStyle(fontSize: 16)),
-                      Text('${meal.kaloriKonsumsi?.toStringAsFixed(0) ?? '0'} Cal', 
-                        style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+            _buildMealsList(),
           ],
         ),
       ),
     );
   }
-}
-
-// The CustomCircularProgressIndicator remains the same as in the original file
-class CustomCircularProgressIndicator extends StatelessWidget {
-  final double progress;
-  final double strokeWidth;
-  final Color backgroundColor;
-  final Color valueColor;
-
-  const CustomCircularProgressIndicator({
-    required this.progress,
-    this.strokeWidth = 8.0,
-    this.backgroundColor = Colors.grey,
-    this.valueColor = Colors.blue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size.square(150),
-      painter: _CircularProgressPainter(
-        progress: progress,
-        strokeWidth: strokeWidth,
-        backgroundColor: backgroundColor,
-        valueColor: valueColor,
-      ),
-    );
-  }
-}
-
-class _CircularProgressPainter extends CustomPainter {
-  final double progress;
-  final double strokeWidth;
-  final Color backgroundColor;
-  final Color valueColor;
-
-  _CircularProgressPainter({
-    required this.progress,
-    required this.strokeWidth,
-    required this.backgroundColor,
-    required this.valueColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - strokeWidth) / 2;
-
-    final backgroundPaint = Paint()
-      ..color = backgroundColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    canvas.drawCircle(center, radius, backgroundPaint);
-
-    final foregroundPaint = Paint()
-      ..color = valueColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    final sweepAngle = 2 * 3.14159265359 * progress;
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -3.14159265359 / 2,
-      sweepAngle,
-      false,
-      foregroundPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
