@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
+import 'package:kaloriku/service/makananService.dart'; // Import MakananService
+import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
 
 void main() {
   runApp(Cemilan());
@@ -38,30 +41,50 @@ class FoodPortionList extends StatefulWidget {
 }
 
 class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
   int _selectedIndex = 0; // State untuk mengatur BottomNavigationBar
-  final List<Makanan> makananList = [
-    Makanan(namaMakanan: 'Almond panggang', kaloriMakanan: 100, beratMakanan: 100, kategoriMakanan: KategoriMakanan.cemilan),
-    Makanan(namaMakanan: 'Greek yogurt dengan madu', kaloriMakanan: 200, beratMakanan: 150, kategoriMakanan: KategoriMakanan.cemilan),
-    Makanan(namaMakanan: 'Smoothie protein', kaloriMakanan: 50, beratMakanan: 200, kategoriMakanan: KategoriMakanan.cemilan),
-    Makanan(namaMakanan: 'Hummus dengan potongan sayuran', kaloriMakanan: 150, beratMakanan: 100, kategoriMakanan: KategoriMakanan.cemilan),
-    Makanan(namaMakanan: 'Roti gandum alpukat', kaloriMakanan: 120, beratMakanan: 150, kategoriMakanan: KategoriMakanan.cemilan),
-  ];
+  late TabController _tabController;
+  late MakananService _makananService;
+  late KaloriKonsumsiService _kaloriKonsumsiService;
 
-  List<Makanan> myOwnMenu = []; // Menu yang ditambahkan oleh pengguna
+  List<Makanan> makananList = []; // Menu yang ditambahkan oleh pengguna
   List<Makanan> filteredMakananList = [];
+  List<Makanan> myOwnMenu = [];
   List<Makanan> filteredMyOwnMenu = [];
   List<Makanan> filteredAddedMenu = [];
-  Makanan? selectedMakananItem;  // Menyimpan makanan yang sedang dipilih
+  Makanan? selectedMakananItem;  // M
+
 
   @override
   void initState() {
     super.initState();
+
+    _makananService = MakananService();
+    _kaloriKonsumsiService = KaloriKonsumsiService();
+
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
     filteredAddedMenu = []; // Awalnya Added Menu kosong
     _tabController = TabController(length: 3, vsync: this);
+
+        fetchMakananData();  // Mengambil data dari API saat awal
   }
+
+  Future<void> fetchMakananData() async {
+    try {
+      List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
+        category: "cemilan",  // Mengambil makanan dengan kategori makan_siang
+        keyword: '',
+        isGeneral: false,
+      );
+      setState(() {
+        makananList = fetchedMakanan;
+        filteredMakananList = fetchedMakanan;  // Menampilkan semua item makanan
+      });
+    } catch (e) {
+      print('Error fetching makanan: $e');
+    }
+  }  
+
 
   void filterSearchResults(String query) {
     setState(() {
@@ -90,6 +113,9 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
     setState(() {
       item.quantity = (item.quantity ?? 0) + 1; // Menambah 1 porsi
     });
+      // Debugging: Menampilkan nilai quantity setelah diupdate
+  print('Added Food - Quantity: ${item.quantity}');    
+
   }
 
 void removeFoodQuantity(Makanan item) {
@@ -103,6 +129,9 @@ void removeFoodQuantity(Makanan item) {
       filteredAddedMenu.removeWhere((food) => food.namaMakanan == item.namaMakanan);
     }
   });
+   // Debugging: Menampilkan nilai quantity setelah diupdate
+  print('Removed Food - Quantity: ${item.quantity}'); 
+
 }
 
  void addToAddedMenu() {
@@ -137,101 +166,172 @@ void removeFoodQuantity(Makanan item) {
     });
   }
 
+Future<void> _createKaloriKonsumsi(Makanan selectedMakanan) async {
+    if (selectedMakanan != null) {
+      try {
+        // Pastikan data yang diberikan bertipe int
+        int? idMakanan = int.tryParse(selectedMakanan.idMakanan.toString()); // Convert to int
+        double beratMakanan = selectedMakanan.beratMakanan ?? 0.0;
+        double kaloriMakanan = selectedMakanan.kaloriMakanan ?? 0.0;
+
+        // Membuat objek konsumsi kalori berdasarkan data yang dipilih
+        KonsumsiKalori konsumsi = KonsumsiKalori(
+          idMakanan: idMakanan ?? 0, // Jika null, set ke 0
+          namaMakanan: selectedMakanan.namaMakanan ?? 'Makanan Tidak Dikenal',
+          kaloriKonsumsi: kaloriMakanan,
+          kaloriTerpenuhi: 0.0,  // Ini bisa dihitung lebih lanjut
+          kaloriTersisa: kaloriMakanan,
+          beratKonsumsi: beratMakanan,
+          waktuMakan: WaktuMakan.cemilan,  // Waktu makan bisa ditentukan dari UI
+        );
+
+        // Memanggil API untuk menyimpan konsumsi kalori
+        KonsumsiKalori result = await _kaloriKonsumsiService.createKonsumsiKalori(konsumsi);
+
+        // Menampilkan notifikasi jika berhasil
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Konsumsi kalori berhasil disimpan: ${result.namaMakanan}'),
+        ));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Gagal menyimpan konsumsi kalori: $e'),
+        ));
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(height: 4),
-            Text(
-              'Cemilan',
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-                color: Color(0xFF61CA3D),
-              ),
-            ),
-          ],
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'General/Default Menu'),
-            Tab(text: 'My Own Menu'),
-            Tab(text: 'Added Menu'),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (query) {
-                filterSearchResults(query);
-              },
-              cursorColor: Colors.black54,
-              decoration: InputDecoration(
-                labelText: 'Cari Makanan...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                prefixIcon: Icon(Icons.search, color: Color(0xFF000000)),
-              ),
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Material(
+          elevation: 2,
+          color: const Color.fromRGBO(248, 248, 248, 1.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
               children: [
-                buildFoodList(filteredMakananList, isAddedMenu: false),
-                buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
-                buildFoodList(filteredAddedMenu, isAddedMenu: true),
+                IconButton(
+                  icon: Icon(FluentIcons.arrow_left_12_regular),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  'Cemilan',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF61CA3D)),
+                ),
               ],
             ),
           ),
-        ],
+        ),
+/*         actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+           onPressed: _showAddCustomMenuDialog, // Fungsi untuk membuka dialog 
+          ),
+        ], */
       ),
-      floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quantity! > 0)
-          ? FloatingActionButton.extended(
-              onPressed: addToAddedMenu,
-              label: Text('Tambah'),
-              backgroundColor: Color(0xFF61CA3D),
-              icon: Icon(Icons.add),
-            )
-          : null,  // Tombol hanya tampil jika ada item yang dipilih dan quantity > 0
+
+floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quantity! > 0)
+    ? FloatingActionButton.extended(
+        onPressed: () async {
+          //added menu pertama
+/*                     print("Menambahkan item ke Added Menu...");
+                    addToAddedMenu(); */
+
+          // Tunggu hingga _createKaloriKonsumsi selesai diproses sebelum melanjutkan
+
+          if (selectedMakananItem != null) {
+            print("Mencoba untuk menyimpan konsumsi kalori...");
+            // Tunggu hingga _createKaloriKonsumsi selesai
+           await  _createKaloriKonsumsi(selectedMakananItem!);
+            print("Konsumsi kalori berhasil disimpan.");
+
+            // Setelah itu, panggil addToAddedMenu
+            print("Menambahkan item ke Added Menu...");
+            addToAddedMenu();
+
+          }
+        },
+        label: Text('Tambah ke Menu Saya'),
+        backgroundColor: Color(0xFF61CA3D),
+        icon: Icon(Icons.add),
+      )
+    : null,  // Tombol hanya tampil jika ada makanan yang dipilih dan quantity > 0
+
+
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 0 ? FluentIcons.home_12_filled : FluentIcons.home_12_regular,
-            ),
+            icon: _selectedIndex == 0
+                ? Icon(FluentIcons.home_12_filled)
+                : Icon(FluentIcons.home_12_regular),
             label: 'Beranda',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 1 ? FluentIcons.chat_12_filled : FluentIcons.chat_12_regular,
-            ),
+            icon: _selectedIndex == 1
+                ? Icon(FluentIcons.chat_12_filled)
+                : Icon(FluentIcons.chat_12_regular),
             label: 'Pertanyaan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 2 ? FluentIcons.person_12_filled : FluentIcons.person_12_regular,
-            ),
+            icon: _selectedIndex == 2
+                ? Icon(FluentIcons.person_12_filled)
+                : Icon(FluentIcons.person_12_regular),
             label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-        showUnselectedLabels: true,
-        backgroundColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              onChanged: filterSearchResults,
+              decoration: InputDecoration(
+                labelText: 'Cari Makanan',
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TabBar(
+              controller: _tabController,
+              tabs: [
+            Tab(text: 'General/Default Menu'),
+            Tab(text: 'My Own Menu'),
+            Tab(text: 'Added Menu'),
+          ],
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                buildFoodList(filteredMakananList, isAddedMenu: false),
+                buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
+                buildFoodList(filteredAddedMenu, isAddedMenu: true),
+            
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget buildFoodList(List<Makanan> makananList, {required bool isAddedMenu}) {
     return ListView.builder(
@@ -245,6 +345,10 @@ void removeFoodQuantity(Makanan item) {
                 selectedMakananItem = (selectedMakananItem == item) ? null : item;
               }
             });
+ // Debugging: Menampilkan nilai selectedMakananItem dan quantity
+    print('selectedMakananItem: $selectedMakananItem');
+    print('Quantity: ${selectedMakananItem?.quantity}');
+
           },
           child: Card(
             margin: EdgeInsets.all(8),
@@ -269,7 +373,7 @@ void removeFoodQuantity(Makanan item) {
                       children: [
                         Text(item.namaMakanan ?? '', style: TextStyle(fontSize: 18)),
                         SizedBox(height: 5),
-                        Text('Kalori per unit: ${item.kaloriMakanan} kal/100gr'),
+                        Text('Kalori per unit: ${item.kaloriMakanan} kcal / ${item.beratMakanan}gram', style: TextStyle(color: Colors.green)),
                         SizedBox(height: 5),
                         if (item.quantity! > 0) ...[
                           Text('Jumlah: ${item.quantity}'),
