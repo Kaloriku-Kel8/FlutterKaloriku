@@ -161,10 +161,14 @@ class AuthService {
     }
   }
 
-  // Mendapatkan token
-  Future<String?> getToken() async {
+Future<String?> getToken() async {
+  try {
     return await _storage.read(key: TOKEN_KEY);
+  } catch (e) {
+    print('Error getting token: $e');
+    return null;
   }
+}
 
   // Fungsi logout
   Future<void> logout() async {
