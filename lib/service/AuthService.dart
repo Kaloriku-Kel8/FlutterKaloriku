@@ -3,11 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:kaloriku/model/user.dart';
 import 'package:kaloriku/util/config/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  //Register
+  static const String TOKEN_KEY = 'jwt_token';
+  static const String USER_KEY = 'current_user';
   static const String USER_UUID_KEY = 'user_uuid';
+
   SharedPreferences? _prefs;
 
   Future<void> init() async {
@@ -21,19 +22,50 @@ class AuthService {
     return _prefs!;
   }
 
+  // Simpan token
+  Future<void> saveToken(String token) async {
+    final preferences = await prefs;
+    await preferences.setString(TOKEN_KEY, token);
+  }
+
+  // Ambil token
+  Future<String?> getToken() async {
+    final preferences = await prefs;
+    return preferences.getString(TOKEN_KEY);
+  }
+
+  // Simpan user
+  Future<void> saveUser(String userJson) async {
+    final preferences = await prefs;
+    await preferences.setString(USER_KEY, userJson);
+  }
+
+  // Ambil user
+  Future<User?> getCurrentUser() async {
+    final preferences = await prefs;
+    final userStr = preferences.getString(USER_KEY);
+    if (userStr != null) {
+      return User.fromJson(jsonDecode(userStr));
+    }
+    return null;
+  }
+
+  // Simpan user UUID
   Future<void> saveUserUUID(String uuid) async {
     final preferences = await prefs;
     await preferences.setString(USER_UUID_KEY, uuid);
   }
 
+  // Ambil user UUID
   Future<String?> getUserUUID() async {
     final preferences = await prefs;
     return preferences.getString(USER_UUID_KEY);
   }
 
-  Future<void> removeUserUUID() async {
+  // Hapus semua data
+  Future<void> clearData() async {
     final preferences = await prefs;
-    await preferences.remove(USER_UUID_KEY);
+    await preferences.clear();
   }
 
   Future<Map<String, dynamic>> register(
@@ -58,7 +90,6 @@ class AuthService {
 
       final responseData = jsonDecode(response.body);
 
-      // Handle successful registration
       if (response.statusCode == 200 && responseData['success'] == true) {
         if (responseData['data'] != null &&
             responseData['data']['user'] != null &&
@@ -69,7 +100,6 @@ class AuthService {
         }
       }
 
-      // Handle validation errors
       if (responseData['data'] != null &&
           responseData['data']['email'] != null) {
         return {
@@ -93,12 +123,6 @@ class AuthService {
     }
   }
 
-  //LOGIN
-  static const String TOKEN_KEY = 'jwt_token';
-  static const String USER_KEY = 'current_user';
-
-  final _storage = const FlutterSecureStorage();
-
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await http.post(
@@ -114,23 +138,19 @@ class AuthService {
 
       if (response.statusCode == 200 && data['success'] == true) {
         // Simpan token
-        await _storage.write(key: TOKEN_KEY, value: data['data']['token']);
+        await saveToken(data['data']['token']);
 
         // Simpan data user
-        await _storage.write(
-            key: USER_KEY, value: jsonEncode(data['data']['user']));
+        await saveUser(jsonEncode(data['data']['user']));
 
         // Simpan UUID
-        await _storage.write(
-            key: 'user_uuid', value: data['data']['user']['user_uuid']);
+        await saveUserUUID(data['data']['user']['user_uuid']);
       } else if (response.statusCode == 401) {
-        // Password salah atau email tidak ditemukan
         return {
           'success': false,
           'message': data['message'] ?? 'Email atau password salah.'
         };
       } else {
-        // Kesalahan server lainnya
         return {
           'success': false,
           'message':
@@ -140,7 +160,6 @@ class AuthService {
 
       return data;
     } catch (e) {
-      // Kesalahan koneksi atau lainnya
       return {
         'success': false,
         'message': 'Terjadi kesalahan koneksi: ${e.toString()}',
@@ -148,34 +167,10 @@ class AuthService {
     }
   }
 
-  // Mengambil data user saat ini
-  Future<User?> getCurrentUser() async {
-    try {
-      final userStr = await _storage.read(key: USER_KEY);
-      if (userStr != null) {
-        return User.fromJson(jsonDecode(userStr));
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-Future<String?> getToken() async {
-  try {
-    return await _storage.read(key: TOKEN_KEY);
-  } catch (e) {
-    print('Error getting token: $e');
-    return null;
-  }
-}
-
-  // Fungsi logout
   Future<void> logout() async {
-    await _storage.deleteAll();
+    await clearData();
   }
 
-  // Fungsi untuk memeriksa status login
   Future<bool> isLoggedIn() async {
     final token = await getToken();
     return token != null;
