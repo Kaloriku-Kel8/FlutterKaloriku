@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
+import 'package:kaloriku/screens/profil/profil.dart';
 import 'package:kaloriku/screens/Home/home_menu.dart';
 import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
@@ -129,7 +131,37 @@ void dispose() {
   super.dispose();
 }
 
+
+
  */
+
+void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+  });
+  
+  switch (index) {
+    case 0:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+      break;
+    case 1:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+      );
+      break;
+    case 2:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      );
+      break;
+  }
+}
+
   @override
   void initState() {
     super.initState();
@@ -234,11 +266,6 @@ void removeFoodQuantity(Makanan item) {
   }
 }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   Future<void> _createKaloriKonsumsi(Makanan selectedMakanan) async {
     if (selectedMakanan != null) {
@@ -365,12 +392,9 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+          onTap: _onItemTapped // Gunakan metode _onItemTapped yang sudah diperbaiki
       ),
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -388,7 +412,6 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
               controller: _tabController,
               tabs: [
             Tab(text: 'General/Default Menu'),
-            Tab(text: 'My Own Menu'),
             Tab(text: 'Added Menu'),
           ],
             ),
