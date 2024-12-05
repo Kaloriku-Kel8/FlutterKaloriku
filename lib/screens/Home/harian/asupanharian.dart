@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../home_menu.dart';
 import 'package:kaloriku/screens/profil/profil.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
+
+// Updated imports
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/service/kaloriKOnsumsiService.dart';
 
@@ -150,8 +153,9 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else if (index == 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(

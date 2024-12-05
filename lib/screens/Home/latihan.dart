@@ -3,6 +3,8 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'home_menu.dart';
 import 'latihan/listlatihan.dart';
 import '../profil/profil.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
+
 
 void main() {
   runApp(const LatihanApp());
@@ -51,8 +53,9 @@ class _LatihanScreenState extends State<LatihanScreen> {
       MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
     );
   } else if (index == 1) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Halaman Pertanyaan belum tersedia")),
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => PertanyaanScreen()),
     );
   } else if (index == 2) {
     Navigator.pushReplacement(

@@ -50,7 +50,7 @@ class _BuatPertanyaanPageState extends State<BuatPertanyaanPage> {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+          MaterialPageRoute(builder: (context) => const PertanyaanScreen()),
         );
         break;
       case 2:

@@ -1,5 +1,6 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 import '../home_menu.dart';
 import '../saran_menu.dart';
 import 'tambah_menu.dart';
@@ -78,9 +79,9 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         );
         break;
       case 1:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Navigasi ke Pertanyaan belum diimplementasi")),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PertanyaanScreen()),
         );
         break;
       case 2:
