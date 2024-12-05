@@ -245,8 +245,8 @@ void removeFoodQuantity(Makanan item) {
       try {
         // Pastikan data yang diberikan bertipe int
         int? idMakanan = int.tryParse(selectedMakanan.idMakanan.toString()); // Convert to int
-        double beratMakanan = selectedMakanan.beratMakanan ?? 0.0;
-        double kaloriMakanan = selectedMakanan.kaloriMakanan ?? 0.0;
+        double beratMakanan = selectedMakanan.beratMakanan! * (selectedMakanan.quantity ?? 1);
+      // double kaloriMakanan = selectedMakanan.kaloriMakanan ?? 0.0;
 
          double totalKalori = selectedMakanan.kaloriMakanan! * (selectedMakanan.quantity ?? 1);
 
@@ -258,9 +258,7 @@ void removeFoodQuantity(Makanan item) {
         KonsumsiKalori konsumsi = KonsumsiKalori(
           idMakanan: idMakanan ?? 0, // Jika null, set ke 0
           namaMakanan: selectedMakanan.namaMakanan ?? 'Makanan Tidak Dikenal',
-          kaloriKonsumsi: kaloriMakanan,
-          kaloriTerpenuhi:totalKalori,  // Ini bisa dihitung lebih lanjut
-          kaloriTersisa: kaloriMakanan,
+          kaloriKonsumsi: totalKalori,
           beratKonsumsi: beratMakanan,
           waktuMakan: WaktuMakan.sarapan,  // Waktu makan bisa ditentukan dari UI
         );
@@ -292,12 +290,10 @@ void removeFoodQuantity(Makanan item) {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               children: [
-                IconButton(
+                  IconButton(
                   icon: Icon(FluentIcons.arrow_left_12_regular),
                   onPressed: () {
-                    Navigator.pop(context,
-                      MaterialPageRoute(builder: (context) => HomeMenuScreen()),
-                    );
+                    Navigator.pop(context); // Cukup gunakan pop saja
                   },
                 ),
                 const SizedBox(width: 16),

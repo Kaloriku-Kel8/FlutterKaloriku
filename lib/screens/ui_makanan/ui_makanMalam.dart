@@ -169,16 +169,19 @@ Future<void> _createKaloriKonsumsi(Makanan selectedMakanan) async {
       try {
         // Pastikan data yang diberikan bertipe int
         int? idMakanan = int.tryParse(selectedMakanan.idMakanan.toString()); // Convert to int
-        double beratMakanan = selectedMakanan.beratMakanan ?? 0.0;
+        double beratMakanan = selectedMakanan.beratMakanan! * (selectedMakanan.quantity ?? 1);;
         double kaloriMakanan = selectedMakanan.kaloriMakanan ?? 0.0;
+
+        double totalKalori = selectedMakanan.kaloriMakanan! * (selectedMakanan.quantity ?? 1); 
+
 
         // Membuat objek konsumsi kalori berdasarkan data yang dipilih
         KonsumsiKalori konsumsi = KonsumsiKalori(
           idMakanan: idMakanan ?? 0, // Jika null, set ke 0
           namaMakanan: selectedMakanan.namaMakanan ?? 'Makanan Tidak Dikenal',
-          kaloriKonsumsi: kaloriMakanan,
-          kaloriTerpenuhi: 0.0,  // Ini bisa dihitung lebih lanjut
-          kaloriTersisa: kaloriMakanan,
+          kaloriKonsumsi: totalKalori,
+         //  kaloriTerpenuhi: 0.0,  // Ini bisa dihitung lebih lanjut
+          // kaloriTersisa: kaloriMakanan,
           beratKonsumsi: beratMakanan,
           waktuMakan: WaktuMakan.makan_malam,  // Waktu makan bisa ditentukan dari UI
         );
