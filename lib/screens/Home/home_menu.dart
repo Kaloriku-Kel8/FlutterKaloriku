@@ -52,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double remainingCalorie = 0;
   double progressValue = 0;
 
+  Map<String, double> targetCalories = {};
+  Map<String, double> consumedCalories = {};
   final _kaloriService = KaloriKonsumsiService();
 
   Color circleColor = Colors.blue; // Menambahkan nilai default
@@ -61,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadSummaryData(); // Memanggil fungsi untuk memuat data saat aplikasi dimulai
+    _loadAllMealData();
   }
 
   Future<void> _loadSummaryData() async {
@@ -75,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 0;
         remainingCalorie = totalCalorie - consumedCalorie;
         progressValue = totalCalorie > 0 ? consumedCalorie / totalCalorie : 0;
-
+        _calculateTargetCalories();
         if (remainingCalorie > 0) {
           circleColor = Colors.green; // Kalori masih tersisa
           status = 'Tersisa';
@@ -91,6 +94,37 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal memuat data: $e')),
+      );
+    }
+  }
+
+  void _calculateTargetCalories() {
+    targetCalories = {
+      'sarapan': totalCalorie * 0.2, // 20% for breakfast
+      'makan_siang': totalCalorie * 0.4, // 40% for lunch
+      'makan_malam': totalCalorie * 0.3, // 30% for dinner
+      'cemilan': totalCalorie * 0.1 // 10% for snacks
+    };
+  }
+
+  Future<void> _loadAllMealData() async {
+    final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    try {
+      // Fetch data for each meal category
+      final categories = ['sarapan', 'makan_siang', 'makan_malam', 'cemilan'];
+
+      for (var category in categories) {
+        final response =
+            await _kaloriService.getKonsumsiByDayAndCategory(date, category);
+        setState(() {
+          consumedCalories[category] =
+              response['total_kalori']?.toDouble() ?? 0.0;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data makanan: $e')),
       );
     }
   }
@@ -172,8 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
 // Inside the build method:
             _buildMealCard(
               'Sarapan',
-              '391 / 635 Cal',
-              Image.asset('assets/images/home/breakfast.png'),
+              'sarapan',
+              'assets/images/home/breakfast.png',
               () {
                 Navigator.push(
                   context,
@@ -183,8 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _buildMealCard(
               'Makan Siang',
-              '856 / 847 Cal',
-              Image.asset('assets/images/home/lunch.png'),
+              'makan_siang',
+              'assets/images/home/lunch.png',
               () {
                 Navigator.push(
                   context,
@@ -194,8 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _buildMealCard(
               'Makan Malam',
-              '379 / 529 Cal',
-              Image.asset('assets/images/home/dinner.png'),
+              'makan_malam',
+              'assets/images/home/dinner.png',
               () {
                 Navigator.push(
                   context,
@@ -203,17 +237,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            _buildMealCard(
-              'Camilan',
-              '159 / 200 Cal',
-              Image.asset('assets/images/home/snack.png'),
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Cemilan()),
-                );
-              },
-            ),
+            _buildMealCard('Cemilan', 'cemilan', 'assets/images/home/snack.png',
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Cemilan()),
+              );
+            }),
           ],
         ),
       ),
@@ -381,21 +411,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMealCard(
-      String title, String calories, dynamic icon, VoidCallback onTap) {
+      String title, String category, String imageAsset, VoidCallback onTap) {
+    // Convert title to category format (e.g., "Makan Siang" to "makan_siang")
+    final categoryKey = category.toLowerCase().replaceAll(' ', '_');
+
+    // Get target and consumed calories for this category
+    final targetCal = targetCalories[categoryKey] ?? 0.0;
+    final consumedCal = consumedCalories[categoryKey] ?? 0.0;
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: const Color.fromRGBO(227, 253, 222, 1.0),
       child: GestureDetector(
         onTap: onTap, // Memanggil onTap ketika card ditekan
         child: ListTile(
-          leading: icon is Image
-              ? icon // Jika `icon` adalah Image, gunakan langsung.
-              : Icon(icon,
-                  size: 40,
-                  color: Colors
-                      .black), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
+          leading: Image.asset(
+              imageAsset), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
           title: Text(title, style: const TextStyle(fontSize: 19)),
-          subtitle: Text(calories, style: const TextStyle(fontSize: 10)),
+          subtitle: Text('${consumedCal.toInt()} / ${targetCal.toInt()} Cal',
+              style: const TextStyle(fontSize: 10)),
           trailing: const Icon(FluentIcons.add_square_48_filled,
               size: 50, color: Colors.green),
         ),
