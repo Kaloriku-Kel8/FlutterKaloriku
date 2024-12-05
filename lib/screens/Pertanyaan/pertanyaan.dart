@@ -45,10 +45,10 @@ class IsiPertanyaanScreen extends StatelessWidget {
 
 class ForumPage extends StatefulWidget {
   @override
-  _ForumPageState createState() => _ForumPageState();
+  ForumPageState createState() => ForumPageState();
 }
 
-class _ForumPageState extends State<ForumPage> {
+class ForumPageState extends State<ForumPage> {
   int _selectedIndex = 1;
   List<Map<String, dynamic>> forumItems = [];
   final ForumService _forumService = ForumService();
@@ -88,9 +88,7 @@ class _ForumPageState extends State<ForumPage> {
                   })
               .toList();
         });
-      }
-    } catch (e) {
-      if (mounted) {
+
         if (forumItems.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -100,6 +98,12 @@ class _ForumPageState extends State<ForumPage> {
             ),
           );
         }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Pertanyaan tidak ditemukan')),
+        );
       }
     }
   }
@@ -363,38 +367,42 @@ class _ForumPageState extends State<ForumPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 0
-                  ? FluentIcons.home_12_filled
-                  : FluentIcons.home_12_regular,
-            ),
+          _buildBottomNavItem(
+            icon: _selectedIndex == 0
+                ? FluentIcons.home_12_filled
+                : FluentIcons.home_12_regular,
             label: 'Beranda',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 1
-                  ? FluentIcons.chat_12_filled
-                  : FluentIcons.chat_12_regular,
-            ),
+          _buildBottomNavItem(
+            icon: _selectedIndex == 1
+                ? FluentIcons.chat_12_filled
+                : FluentIcons.chat_12_regular,
             label: 'Pertanyaan',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _selectedIndex == 2
-                  ? FluentIcons.person_12_filled
-                  : FluentIcons.person_12_regular,
-            ),
+          _buildBottomNavItem(
+            icon: _selectedIndex == 2
+                ? FluentIcons.person_12_filled
+                : FluentIcons.person_12_regular,
             label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.black, // Change to green for consistency
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildBottomNavItem({
+    required IconData icon,
+    required String label,
+  }) {
+    return BottomNavigationBarItem(
+      icon: Icon(icon),
+      label: label,
     );
   }
 }

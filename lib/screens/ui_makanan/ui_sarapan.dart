@@ -146,7 +146,7 @@ void dispose() {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
         );
         break;
       case 1:
@@ -182,7 +182,7 @@ void dispose() {
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "sarapan", // Mengambil makanan dengan kategori sarapan
         keyword: '',
-        isGeneral: false,
+        isGeneral: true,
       );
       setState(() {
         makananList = fetchedMakanan;

@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double consumedCalorie = 0;
   double remainingCalorie = 0;
   double progressValue = 0;
+  bool _isLoading = false;
 
   Map<String, double> targetCalories = {};
   Map<String, double> consumedCalories = {};
@@ -129,10 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
+    if (_isLoading) return; // Prevent multiple taps while loading
+
     setState(() {
       _selectedIndex = index;
+      _isLoading = true;
     });
+
+    // Add artificial delay
+    await Future.delayed(const Duration(milliseconds: 3000));
+
+    if (!mounted) return;
+
     if (index == 0) {
       Navigator.pushReplacement(
         context,
@@ -141,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (index == 1) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+        MaterialPageRoute(builder: (context) => const PertanyaanScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
@@ -149,6 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(builder: (context) => const ProfilScreen()),
       );
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

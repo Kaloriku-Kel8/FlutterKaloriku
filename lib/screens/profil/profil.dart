@@ -4,7 +4,9 @@ import 'package:kaloriku/screens/Home/riwayat.dart';
 import '../Home/home_menu.dart';
 import 'editprofil.dart';
 import 'package:kaloriku/service/userprofilservice.dart';
+import 'package:kaloriku/service/authService.dart';
 import 'package:kaloriku/model/dataUser.dart';
+import 'package:kaloriku/screens/login.dart';
 import '../Pertanyaan/pertanyaan.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -113,6 +115,28 @@ class _ProfilScreenState extends State<ProfilScreen>
 
     if (result == true || result == null) {
       await _fetchUserProfile();
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    final authService = AuthService(); // Inisialisasi AuthService
+    try {
+      await authService.logout();
+      // Navigasi ke halaman login atau splash screen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                const LoginScreen()), // Sesuaikan dengan layar login Anda
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saat logout: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -252,6 +276,20 @@ class _ProfilScreenState extends State<ProfilScreen>
                                       _buildInfoRow('Target Kalori',
                                           '${_userData?.targetKalori?.toStringAsFixed(2) ?? '-'} Kcal'),
                                     ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Center(
+                                child: ElevatedButton.icon(
+                                  onPressed: _handleLogout,
+                                  icon: const Icon(Icons.logout),
+                                  label: const Text('Logout'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 254, 63, 50),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
                                   ),
                                 ),
                               ),
