@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:kaloriku/model/makanan.dart'; // Import model Makanan
-import 'package:kaloriku/service/makananService.dart'; // Import MakananService
+import 'package:kaloriku/service/makananService.dart';
+import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
+import 'package:kaloriku/screens/profil/profil.dart';
+import 'package:kaloriku/screens/Home/home_menu.dart';
 
 void main() {
   runApp(Sarapan());
@@ -11,6 +14,7 @@ class Sarapan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.green,
         inputDecorationTheme: InputDecorationTheme(
@@ -49,6 +53,28 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
   List<Makanan> filteredMyOwnMenu = [];
   List<Makanan> filteredAddedMenu = [];
   Makanan? selectedMakananItem;
+
+ void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PertanyaanScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -155,7 +181,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
           controller: _tabController,
           tabs: [
             Tab(text: 'General/Default Menu'),
-            Tab(text: 'My Own Menu'),
+            //Tab(text: 'My Own Menu'),
             Tab(text: 'Added Menu'),
           ],
         ),
@@ -221,7 +247,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
@@ -317,11 +343,4 @@ Widget buildFoodList(List<Makanan> foods, {bool isAddedMenu = false}) {
     },
   );
 }
-
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 }

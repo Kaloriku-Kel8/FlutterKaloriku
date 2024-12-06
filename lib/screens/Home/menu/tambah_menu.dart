@@ -280,7 +280,7 @@ class _TambahMenuScreenState extends State<TambahMenuScreen> {
           label: 'Profil',
         ),
       ],
-      selectedItemColor: Colors.green,
+      selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       backgroundColor: Colors.white,

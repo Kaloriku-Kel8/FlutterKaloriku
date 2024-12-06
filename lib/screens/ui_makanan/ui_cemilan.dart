@@ -159,7 +159,7 @@ void removeFoodQuantity(Makanan item) {
           controller: _tabController,
           tabs: [
             Tab(text: 'General/Default Menu'),
-            Tab(text: 'My Own Menu'),
+          //  Tab(text: 'My Own Menu'),
             Tab(text: 'Added Menu'),
           ],
         ),
