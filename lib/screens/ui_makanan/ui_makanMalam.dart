@@ -77,7 +77,7 @@ late KaloriKonsumsiService _kaloriKonsumsiService;
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "makan_malam",  // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: false,
+        isGeneral: true,
       );
       setState(() {
         makananList = fetchedMakanan;
@@ -86,7 +86,7 @@ late KaloriKonsumsiService _kaloriKonsumsiService;
     } catch (e) {
       print('Error fetching makanan: $e');
     }
-  }  
+  }
 
 
   void filterSearchResults(String query) {
@@ -170,7 +170,7 @@ void _onItemTapped(int index) {
     case 0:
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
       break;
     case 1:

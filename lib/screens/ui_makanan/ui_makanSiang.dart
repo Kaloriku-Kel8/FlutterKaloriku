@@ -76,7 +76,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "makan_siang",  // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: false,
+        isGeneral: true,
       );
       setState(() {
         makananList = fetchedMakanan;
@@ -85,7 +85,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
     } catch (e) {
       print('Error fetching makanan: $e');
     }
-  }  
+  }
 
   void filterSearchResults(String query) {
     setState(() {
@@ -169,7 +169,7 @@ void _onItemTapped(int index) {
     case 0:
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeMenuScreen()),
       );
       break;
     case 1:
