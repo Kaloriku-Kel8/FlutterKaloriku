@@ -9,9 +9,7 @@ import 'package:kaloriku/screens/Home/home_menu.dart';
 import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
 
-void main() {
-  runApp(MakanMalam());
-}
+
 
 class MakanMalam extends StatelessWidget {
   @override
@@ -35,7 +33,8 @@ class MakanMalam extends StatelessWidget {
           ),
         ),
       ),
-      home: FoodPortionList(),
+     home: FoodPortionList(),
+    
     );
   }
 }
@@ -68,7 +67,7 @@ late KaloriKonsumsiService _kaloriKonsumsiService;
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
     filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
 
             fetchMakananData();  // Mengambil data dari API saat awal
   }
@@ -336,7 +335,7 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
               tabs: [
             Tab(text: 'General/Default Menu'),
        //     Tab(text: 'My Own Menu'),
-            Tab(text: 'Added Menu'),
+         /*    Tab(text: 'Added Menu'), */
           ],
             ),
             Expanded(
@@ -345,7 +344,7 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
                 children: [
                 buildFoodList(filteredMakananList, isAddedMenu: false),
               //  buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
-                buildFoodList(filteredAddedMenu, isAddedMenu: true),
+             //   buildFoodList(filteredAddedMenu, isAddedMenu: true),
             
                 ],
               ),
