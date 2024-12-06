@@ -11,7 +11,7 @@ class KaloriKu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Test Login',
+      title: 'Kaloriku',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),

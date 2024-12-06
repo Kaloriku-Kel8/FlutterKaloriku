@@ -76,7 +76,7 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "makan_siang",  // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;

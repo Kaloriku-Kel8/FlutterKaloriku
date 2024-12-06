@@ -171,7 +171,7 @@ void dispose() {
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
     filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
     fetchMakananData(); // Mengambil data dari API saat awal
   }
 
@@ -180,7 +180,7 @@ void dispose() {
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "sarapan", // Mengambil makanan dengan kategori sarapan
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;

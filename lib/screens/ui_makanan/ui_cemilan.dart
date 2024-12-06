@@ -75,7 +75,7 @@ class _FoodPortionListState extends State<FoodPortionList>
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "cemilan", // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;

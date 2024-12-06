@@ -77,7 +77,7 @@ late KaloriKonsumsiService _kaloriKonsumsiService;
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "makan_malam",  // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;
