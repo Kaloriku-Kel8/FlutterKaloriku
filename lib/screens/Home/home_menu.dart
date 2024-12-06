@@ -16,8 +16,6 @@ import 'harian/asupanharian.dart';
 import '../profil/profil.dart';
 import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 
-
-
 class HomeMenuScreen extends StatelessWidget {
   const HomeMenuScreen({super.key});
 
@@ -434,12 +432,15 @@ class _HomeScreenState extends State<HomeScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: const Color.fromRGBO(227, 253, 222, 1.0),
       child: GestureDetector(
+        onTap: onTap, // Memanggil onTap ketika card ditekan
         child: ListTile(
           leading: Image.asset(
-              imageAsset), // Jika `icon` adalah IconData, bungkus dengan `Icon`.
+              imageAsset), // Jika icon adalah IconData, bungkus dengan Icon.
           title: Text(title, style: const TextStyle(fontSize: 19)),
           subtitle: Text('${consumedCal.toInt()} / ${targetCal.toInt()} Cal',
               style: const TextStyle(fontSize: 10)),
+          trailing: const Icon(FluentIcons.add_square_48_filled,
+              size: 50, color: Colors.green),
         ),
       ),
     );
