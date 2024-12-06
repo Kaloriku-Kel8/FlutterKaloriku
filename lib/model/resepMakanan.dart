@@ -1,25 +1,25 @@
-enum KategoriResep { sarapan, makan_siang, makan_malam, cemilan }
+  enum KategoriResep { sarapan, makan_siang, makan_malam, cemilan }
 
-class ResepMakanan {
-  int? idResep;
-  String? namaResep;
-  String? deskripsi;
-  String? resep;
-  String? gambar;
-  double? kaloriMakanan;
-  double? beratMakanan;
-  KategoriResep? kategoriResep;
+  class ResepMakanan {
+    int? idResep;
+    String? namaResep;
+    String? deskripsi;
+    String? resep;
+    String? gambar;
+    double? kaloriMakanan;
+    double? beratMakanan;
+    KategoriResep? kategoriResep;
 
-  ResepMakanan({
-    this.idResep,
-    this.namaResep,
-    this.deskripsi,
-    this.resep,
-    this.gambar,
-    this.kaloriMakanan,
-    this.beratMakanan,
-    this.kategoriResep,
-  });
+    ResepMakanan({
+      this.idResep,
+      this.namaResep,
+      this.deskripsi,
+      this.resep,
+      this.gambar,
+      this.kaloriMakanan,
+      this.beratMakanan,
+      this.kategoriResep,
+    });
 
   // Factory method to create an instance from JSON
   factory ResepMakanan.fromJson(Map<String, dynamic> json) {
@@ -29,6 +29,7 @@ class ResepMakanan {
           : null,
       namaResep: json['nama_resep'],
       deskripsi: json['deskripsi'],
+      resep: json['resep'],
       gambar: json['gambar'],
       kaloriMakanan: json['kalori_makanan'] != null
           ? double.tryParse(json['kalori_makanan'].toString())
@@ -45,46 +46,46 @@ class ResepMakanan {
     );
   }
 
-  // Method to convert instance back to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'id_resep': idResep,
-      'nama_resep': namaResep,
-      'deskripsi': deskripsi,
-      'resep': resep,
-      'gambar': gambar,
-      'kalori_makanan': kaloriMakanan,
-      'berat_makanan': beratMakanan,
-      'kategori_resep': kategoriResep?.toString().split('.').last,
-    };
+    // Method to convert instance back to JSON
+    Map<String, dynamic> toJson() {
+      return {
+        'id_resep': idResep,
+        'nama_resep': namaResep,
+        'deskripsi': deskripsi,
+        'resep': resep,
+        'gambar': gambar,
+        'kalori_makanan': kaloriMakanan,
+        'berat_makanan': beratMakanan,
+        'kategori_resep': kategoriResep?.toString().split('.').last,
+      };
+    }
   }
-}
 
-// // Example usage (optional)
-// void main() {
-//   // JSON data from API or database
-//   String jsonString = '''
-//     {
-//       "id_resep": 1,
-//       "nama_resep": "Ayam Goreng",
-//       "deskripsi": "Ayam goreng dengan bumbu khas",
-//       "gambar": "url_gambar.jpg",
-//       "kalori_makanan": 250.0,
-//       "berat_makanan": 200.0,
-//       "kategori_resep": "makan_siang"
-//     }
-//   ''';
+  // // Example usage (optional)
+  // void main() {
+  //   // JSON data from API or database
+  //   String jsonString = '''
+  //     {
+  //       "id_resep": 1,
+  //       "nama_resep": "Ayam Goreng",
+  //       "deskripsi": "Ayam goreng dengan bumbu khas",
+  //       "gambar": "url_gambar.jpg",
+  //       "kalori_makanan": 250.0,
+  //       "berat_makanan": 200.0,
+  //       "kategori_resep": "makan_siang"
+  //     }
+  //   ''';
 
-//   // Parse JSON into ResepMakanan object
-//   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-//   ResepMakanan resepMakanan = ResepMakanan.fromJson(jsonMap);
+  //   // Parse JSON into ResepMakanan object
+  //   Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+  //   ResepMakanan resepMakanan = ResepMakanan.fromJson(jsonMap);
 
-  //   print("Nama Resep: ${resepMakanan.namaResep}");
-  //   print("Deskripsi: ${resepMakanan.deskripsi}");
-  //   print("Kalori: ${resepMakanan.kaloriMakanan} kkal");
-  //   print("Kategori Resep: ${resepMakanan.kategoriResep}");
+    //   print("Nama Resep: ${resepMakanan.namaResep}");
+    //   print("Deskripsi: ${resepMakanan.deskripsi}");
+    //   print("Kalori: ${resepMakanan.kaloriMakanan} kkal");
+    //   print("Kategori Resep: ${resepMakanan.kategoriResep}");
 
-  //   // Convert back to JSON
-  //   String encodedJson = jsonEncode(resepMakanan.toJson());
-  //   print("Encoded JSON: $encodedJson");
-  // }
+    //   // Convert back to JSON
+    //   String encodedJson = jsonEncode(resepMakanan.toJson());
+    //   print("Encoded JSON: $encodedJson");
+    // }

@@ -39,7 +39,7 @@ class ForumService {
             'Failed to fetch questions');
       }
     } catch (e) {
-      throw Exception('Error fetching questions: $e');
+      throw Exception('$e');
     }
   }
 

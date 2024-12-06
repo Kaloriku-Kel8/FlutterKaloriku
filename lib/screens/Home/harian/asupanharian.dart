@@ -10,9 +10,7 @@ import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/service/kaloriKOnsumsiService.dart';
 
-void main() {
-  runApp(const AsupanHarianScreen());
-}
+
 
 class AsupanHarianScreen extends StatelessWidget {
   const AsupanHarianScreen({super.key});
@@ -138,6 +136,27 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gagal memuat data kategori: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteKonsumsi(String id) async {
+    try {
+      await _kaloriService.deleteKonsumsiKalori(id);
+      // Refresh the data after deletion
+      await _loadCategoryMeals(_selectedCategory!);
+      await _loadSummaryData();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berhasil menghapus makanan')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menghapus makanan: $e')),
         );
       }
     }
@@ -341,30 +360,114 @@ class _AsupanHarianHomeState extends State<AsupanHarianHome> {
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
           elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      meal.namaMakanan ?? 'Unnamed Meal',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+          child: Dismissible(
+            key: Key(meal.idKonsumsi.toString() ?? 'default'),
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+            direction: DismissDirection.endToStart,
+            confirmDismiss: (direction) async {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Konfirmasi'),
+                    content: const Text(
+                        'Apakah Anda yakin ingin menghapus makanan ini?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Batal'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Hapus'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            onDismissed: (direction) {
+              if (meal.idKonsumsi != null) {
+                _deleteKonsumsi(meal.idKonsumsi.toString()!);
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          meal.namaMakanan ?? 'Unnamed Meal',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${meal.beratKonsumsi?.toStringAsFixed(0) ?? '0'} gram',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${meal.beratKonsumsi?.toStringAsFixed(0) ?? '0'} gram',
-                      style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                Text(
-                  '${meal.kaloriKonsumsi?.toStringAsFixed(0) ?? '0'} Cal',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        '${meal.kaloriKonsumsi?.toStringAsFixed(0) ?? '0'} Cal',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        color: Colors.red,
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Konfirmasi'),
+                                content: const Text(
+                                    'Apakah Anda yakin ingin menghapus makanan ini?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Batal'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text('Hapus'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirm == true && meal.idKonsumsi != null) {
+                            _deleteKonsumsi(meal.idKonsumsi.toString()!);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

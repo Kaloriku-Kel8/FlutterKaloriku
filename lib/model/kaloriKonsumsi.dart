@@ -11,6 +11,7 @@ class KonsumsiKalori {
   double? kaloriTersisa;
   double? beratKonsumsi;
   WaktuMakan? waktuMakan;
+  //int? quantity;
 
   KonsumsiKalori({
     this.idKonsumsi,
@@ -23,6 +24,7 @@ class KonsumsiKalori {
     this.kaloriTersisa,
     this.beratKonsumsi,
     this.waktuMakan,
+  // this.quantity = 0,
   });
 
   // Factory method untuk membuat instance dari JSON

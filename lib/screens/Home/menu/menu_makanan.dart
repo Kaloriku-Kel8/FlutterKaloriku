@@ -184,94 +184,108 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: _resep?.gambar != null
-                  ? Image.network(
-                      _resep!.gambar!,
-                      fit: BoxFit.cover,
-                      height: 200,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 200,
-                          color: Colors.grey[200],
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 50,
-                              color: Colors.grey,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: _resep?.gambar != null
+                    ? Image.network(
+                        _resep!.gambar!,
+                        fit: BoxFit.cover,
+                        height: 200,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 200,
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      height: 200,
-                      color: Colors.grey[200],
-                      child: const Center(
-                        child: Text('Gambar tidak tersedia'),
+                          );
+                        },
+                      )
+                    : Container(
+                        height: 200,
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: Text('Gambar tidak tersedia'),
+                        ),
                       ),
-                    ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _resep?.namaResep ?? 'Nama Resep Tidak Tersedia',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  '${_resep?.kaloriMakanan?.toStringAsFixed(0) ?? '0'} Cal',
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.normal),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    _resep?.deskripsi ?? 'Deskripsi tidak tersedia',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TambahMenuScreen(resep: _resep),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.green,
-                  elevation: 2,
-                  minimumSize: const Size(150, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text('Tambah'),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                _resep?.namaResep ?? 'Nama Resep Tidak Tersedia',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    '${_resep?.kaloriMakanan?.toStringAsFixed(0) ?? '0'} Cal',
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _resep?.deskripsi ?? 'Deskripsi tidak tersedia',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _resep?.resep ?? 'Resep tidak tersedia',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TambahMenuScreen(resep: _resep),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                    elevation: 2,
+                    minimumSize: const Size(150, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text('Tambah'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       backgroundColor: Colors.white,

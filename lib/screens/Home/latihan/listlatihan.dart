@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
-void main() {
-  runApp(const ListLatihan());
-}
+
 
 class ListLatihan extends StatelessWidget {
   const ListLatihan({super.key});
