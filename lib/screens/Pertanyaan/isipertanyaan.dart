@@ -7,9 +7,7 @@ import 'package:kaloriku/model/komentar.dart';
 import 'dart:convert'; // This is the library for JSON decoding
 import 'pertanyaan.dart';
 
-void main() {
-  runApp(IsiPertanyaanScreen());
-}
+
 
 class IsiPertanyaanScreen extends StatelessWidget {
   @override

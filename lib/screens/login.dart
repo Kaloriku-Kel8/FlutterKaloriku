@@ -3,9 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kaloriku/service/authService.dart'; // Make sure this service exists in your project
 import 'package:kaloriku/screens/Home/home_menu.dart'; // Ensure this screen exists
 
-void main() {
-  runApp(const MyApp());
-}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

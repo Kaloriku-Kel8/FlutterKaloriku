@@ -10,9 +10,7 @@ import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 import 'package:kaloriku/model/kaloriKonsumsi.dart';
 import 'package:kaloriku/service/kaloriKOnsumsiService.dart';
 
-void main() {
-  runApp(const AsupanHarianScreen());
-}
+
 
 class AsupanHarianScreen extends StatelessWidget {
   const AsupanHarianScreen({super.key});

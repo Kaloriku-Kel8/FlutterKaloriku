@@ -10,9 +10,6 @@ import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
 
 
-void main() {
-  runApp(MakanSiang());
-}
 
 class MakanSiang extends StatelessWidget {
   @override
@@ -54,8 +51,8 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
   List<Makanan> makananList = []; // Menu yang ditambahkan oleh pengguna
   List<Makanan> filteredMakananList = [];
   List<Makanan> myOwnMenu = [];
-  List<Makanan> filteredMyOwnMenu = [];
-  List<Makanan> filteredAddedMenu = [];
+  List<Makanan> filteredMyOwnMenu = [];//
+  List<Makanan> filteredAddedMenu = [];//
   Makanan? selectedMakananItem;  // Menyimpan makanan yang sedang dipilih
 
   @override
@@ -67,8 +64,8 @@ class _FoodPortionListState extends State<FoodPortionList> with SingleTickerProv
 
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
-    filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 2, vsync: this);
+   // filteredAddedMenu = []; // Awalnya Added Menu kosong
+    _tabController = TabController(length: 1, vsync: this);
 
         fetchMakananData();  // Mengambil data dari API saat awal
 
@@ -333,7 +330,7 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
               tabs: [
             Tab(text: 'General/Default Menu'),
        //     Tab(text: 'My Own Menu'),
-            Tab(text: 'Added Menu'),
+        //    Tab(text: 'Added Menu'),
           ],
             ),
             Expanded(
@@ -342,7 +339,7 @@ floatingActionButton: (selectedMakananItem != null && selectedMakananItem!.quant
                 children: [
                 buildFoodList(filteredMakananList, isAddedMenu: false),
              //   buildFoodList(filteredMyOwnMenu, isAddedMenu: false),
-                buildFoodList(filteredAddedMenu, isAddedMenu: true),
+             //   buildFoodList(filteredAddedMenu, isAddedMenu: true),
             
                 ],
               ),

@@ -16,9 +16,7 @@ import 'harian/asupanharian.dart';
 import '../profil/profil.dart';
 import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 
-void main() {
-  runApp(const HomeMenuScreen());
-}
+
 
 class HomeMenuScreen extends StatelessWidget {
   const HomeMenuScreen({super.key});

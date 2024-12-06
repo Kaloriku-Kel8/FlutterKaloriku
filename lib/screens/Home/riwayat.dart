@@ -6,9 +6,7 @@ import 'package:kaloriku/service/kaloriKonsumsiService.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
-void main() {
-  runApp(const Riwayat());
-}
+
 
 class Riwayat extends StatelessWidget {
   const Riwayat({super.key});

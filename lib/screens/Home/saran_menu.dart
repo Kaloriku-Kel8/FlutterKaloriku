@@ -7,9 +7,7 @@ import 'home_menu.dart';
 import '../profil/profil.dart';
 import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
-void main() {
-  runApp(const SaranMenuScreen());
-}
+
 
 class SaranMenuScreen extends StatelessWidget {
   const SaranMenuScreen({super.key});
