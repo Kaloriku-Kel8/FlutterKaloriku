@@ -17,6 +17,7 @@ class Cemilan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color.fromARGB(255, 6, 29, 6),
         inputDecorationTheme: InputDecorationTheme(
