@@ -9,9 +9,6 @@ import 'package:kaloriku/screens/Home/home_menu.dart';
 import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
 
-void main() {
-  runApp(Sarapan());
-}
 
 class Sarapan extends StatelessWidget {
   @override
@@ -35,6 +32,7 @@ class Sarapan extends StatelessWidget {
         ),
       ),
       home: FoodPortionList(),
+     debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -173,7 +171,7 @@ void dispose() {
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
     filteredMyOwnMenu = myOwnMenu;
     filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
     fetchMakananData(); // Mengambil data dari API saat awal
   }
 
@@ -182,7 +180,7 @@ void dispose() {
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "sarapan", // Mengambil makanan dengan kategori sarapan
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;
@@ -425,9 +423,9 @@ void dispose() {
             TabBar(
               controller: _tabController,
               tabs: [
-                Tab(text: 'General/Default Menu'),
-                Tab(text: 'Added Menu'),
-              ],
+            Tab(text: 'General/Default Menu'),
+         /*    Tab(text: 'Added Menu'), */
+          ],
             ),
             Expanded(
               child: TabBarView(

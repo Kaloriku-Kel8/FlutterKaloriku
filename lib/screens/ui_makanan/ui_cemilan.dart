@@ -9,9 +9,6 @@ import 'package:kaloriku/screens/Home/home_menu.dart';
 import 'package:kaloriku/service/makananService.dart'; // Import MakananService
 import 'package:kaloriku/service/kaloriKonsumsiService.dart'; // Import KaloriKonsumsiService
 
-void main() {
-  runApp(Cemilan());
-}
 
 class Cemilan extends StatelessWidget {
   @override
@@ -35,7 +32,7 @@ class Cemilan extends StatelessWidget {
         ),
       ),
       home: FoodPortionList(),
-    );
+   );
   }
 }
 
@@ -66,9 +63,9 @@ class _FoodPortionListState extends State<FoodPortionList>
     _kaloriKonsumsiService = KaloriKonsumsiService();
 
     filteredMakananList = makananList; // Menampilkan semua item makanan di awal
-    filteredMyOwnMenu = myOwnMenu;
-    filteredAddedMenu = []; // Awalnya Added Menu kosong
-    _tabController = TabController(length: 2, vsync: this);
+  /* /*   filteredMyOwnMenu = myOwnMenu;
+    filteredAddedMenu */ = []; // Awalnya Added Menu kosong */
+    _tabController = TabController(length: 1, vsync: this);
 
     fetchMakananData(); // Mengambil data dari API saat awal
   }
@@ -78,7 +75,7 @@ class _FoodPortionListState extends State<FoodPortionList>
       List<Makanan> fetchedMakanan = await _makananService.GetAndSearchMakanan(
         category: "cemilan", // Mengambil makanan dengan kategori makan_siang
         keyword: '',
-        isGeneral: true,
+        isGeneral: false,
       );
       setState(() {
         makananList = fetchedMakanan;
@@ -343,10 +340,10 @@ class _FoodPortionListState extends State<FoodPortionList>
             TabBar(
               controller: _tabController,
               tabs: [
-                Tab(text: 'General/Default Menu'),
-                //    Tab(text: 'My Own Menu'),
-                Tab(text: 'Added Menu'),
-              ],
+            Tab(text: 'General/Default Menu'),
+        //    Tab(text: 'My Own Menu'),
+      /*       Tab(text: 'Added Menu'), */
+          ],
             ),
             Expanded(
               child: TabBarView(

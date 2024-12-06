@@ -6,9 +6,7 @@ import '../profil/profil.dart';
 import 'package:kaloriku/screens/Pertanyaan/pertanyaan.dart';
 
 
-void main() {
-  runApp(const LatihanApp());
-}
+
 
 class LatihanApp extends StatelessWidget {
   const LatihanApp({super.key});
